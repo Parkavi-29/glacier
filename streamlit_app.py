@@ -1,40 +1,24 @@
 import streamlit as st
-import pandas as pd
-import plotly.express as px
+import leafmap.foliumap as leafmap
+import os
 
-# Set page layout
-st.set_page_config(page_title="Glacier Melt Analysis", layout="wide")
+st.set_page_config(layout="wide")
+st.title("🗺️ Glacier Mask Viewer with Time Slider")
 
-st.title("🧊 Glacier Melt Analysis Web App")
-st.markdown("This app visualizes glacier retreat over time using data from Google Earth Engine.")
+# Folder containing yearly TIFF files
+tiff_folder = "glacier_tiffs"  # Folder with GeoTIFFs like GlacierMask_2015.tif
 
-# Load CSV directly from GitHub
-csv_url = 'https://raw.githubusercontent.com/Parkavi-29/glacier/main/Glacier_Area_Trend.csv'
+years = list(range(2015, 2024))
+selected_year = st.slider("Select Year", min_value=2015, max_value=2023, step=1)
 
-try:
-    df = pd.read_csv(csv_url)
-    st.success("✅ Data loaded from GitHub!")
+# Construct the file path
+tif_path = os.path.join(tiff_folder, f"GlacierMask_{selected_year}.tif")
 
-    # Show raw data
-    st.subheader("📋 Glacier Area Data (sq.km)")
-    st.dataframe(df)
-
-    # Line chart
-    st.subheader("📉 Glacier Area Over the Years")
-    fig = px.line(df, x='year', y='area_km2', markers=True,
-                  title="Glacier Retreat Trend",
-                  labels={"year": "Year", "area_km2": "Area (sq.km)"})
-    st.plotly_chart(fig, use_container_width=True)
-
-    # Area loss summary
-    initial = df['area_km2'].max()
-    latest = df['area_km2'].min()
-    loss = initial - latest
-    st.metric("📉 Total Glacier Loss (2015–2023)", f"{loss:.2f} sq.km")
-
-    # Download button
-    st.download_button("📥 Download CSV", df.to_csv(index=False), file_name="Glacier_Area_Trend.csv", mime="text/csv")
-
-except Exception as e:
-    st.error("⚠️ Could not load CSV. Please make sure the file exists in your GitHub repo.")
-    st.exception(e)
+# Display map
+st.subheader(f"🧊 Glacier Mask for Year: {selected_year}")
+m = leafmap.Map(center=[30.95, 79.05], zoom=10)
+if os.path.exists(tif_path):
+    m.add_raster(tif_path, layer_name=f"Glacier {selected_year}", colormap="Blues", opacity=0.6)
+else:
+    st.warning("GeoTIFF not found. Make sure you've exported it from GEE and placed it in the folder.")
+m.to_streamlit(height=600)
