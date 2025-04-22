@@ -1,4 +1,6 @@
 streamlit
+leafmap
 pandas
 plotly
-leafmap
+xarray
+rasterio
