@@ -2,46 +2,39 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-# Set page config
+# Set page layout
 st.set_page_config(page_title="Glacier Melt Analysis", layout="wide")
 
-# Title and Description
-st.title("🧊 Glacier Melt Analysis")
-st.markdown("""
-Welcome to your final year project! This app visualizes glacier melt data over time, 
-based on satellite analysis from Google Earth Engine.
-""")
+st.title("🧊 Glacier Melt Analysis Web App")
+st.markdown("This app visualizes glacier retreat over time using data from Google Earth Engine.")
 
-# File uploader
-uploaded_file = st.file_uploader("📤 Upload your Glacier Area CSV (from GEE)", type="csv")
+# Load CSV directly from GitHub
+csv_url = 'https://raw.githubusercontent.com/Parkavi-29/glacier/main/Glacier_Area_Trend.csv'
 
-# If file is uploaded
-if uploaded_file:
-    df = pd.read_csv(uploaded_file)
-    st.success("✅ File uploaded successfully!")
+try:
+    df = pd.read_csv(csv_url)
+    st.success("✅ Data loaded from GitHub!")
 
-    # Show data
+    # Show raw data
     st.subheader("📋 Glacier Area Data (sq.km)")
     st.dataframe(df)
 
-    # Plot glacier area over time
+    # Line chart
     st.subheader("📉 Glacier Area Over the Years")
     fig = px.line(df, x='year', y='area_km2', markers=True,
                   title="Glacier Retreat Trend",
-                  labels={"area_km2": "Glacier Area (sq.km)", "year": "Year"})
+                  labels={"year": "Year", "area_km2": "Area (sq.km)"})
     st.plotly_chart(fig, use_container_width=True)
 
-    # Calculate loss
+    # Area loss summary
     initial = df['area_km2'].max()
     latest = df['area_km2'].min()
     loss = initial - latest
-
     st.metric("📉 Total Glacier Loss (2015–2023)", f"{loss:.2f} sq.km")
 
     # Download button
-    st.download_button("📥 Download CSV", uploaded_file, file_name="Glacier_Area_Trend.csv")
+    st.download_button("📥 Download CSV", df.to_csv(index=False), file_name="Glacier_Area_Trend.csv", mime="text/csv")
 
-else:
-    st.info("👈 Upload a CSV to get started. You can use your export from Google Earth Engine.")
-
-
+except Exception as e:
+    st.error("⚠️ Could not load CSV. Please make sure the file exists in your GitHub repo.")
+    st.exception(e)
