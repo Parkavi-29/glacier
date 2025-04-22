@@ -1,31 +1,40 @@
 import streamlit as st
-import leafmap.foliumap as leafmap
-import os
+import pandas as pd
+import plotly.express as px
 
-# Streamlit UI setup
-st.set_page_config(layout="wide")
-st.title("🧊 Himalayan Glacier Melt Visualizer")
-st.markdown("Use the slider to explore glacier mask overlays from 2015 to 2023.")
+# Set page layout
+st.set_page_config(page_title="Glacier Melt Analysis", layout="wide")
 
-# Folder containing exported GeoTIFFs
-tiff_folder = "glacier_tiffs"
+st.title("🧊 Glacier Melt Analysis Web App")
+st.markdown("This app visualizes glacier retreat over time using data from Google Earth Engine.")
 
-# Time slider for year selection
-years = list(range(2015, 2024))
-selected_year = st.slider("Select Year", min_value=2015, max_value=2023, step=1)
+# Load CSV directly from GitHub
+csv_url = 'https://raw.githubusercontent.com/Parkavi-29/glacier/main/Glacier_Area_Trend.csv'
 
-# Construct file path
-tif_path = os.path.join(tiff_folder, f"GlacierMask_{selected_year}.tif")
+try:
+    df = pd.read_csv(csv_url)
+    st.success("✅ Data loaded from GitHub!")
 
-# Initialize map
-m = leafmap.Map(center=[30.95, 79.05], zoom=10)
+    # Show raw data
+    st.subheader("📋 Glacier Area Data (sq.km)")
+    st.dataframe(df)
 
-# Add glacier mask if available
-if os.path.exists(tif_path):
-    m.add_raster(tif_path, layer_name=f"Glacier Mask {selected_year}", colormap="Blues", opacity=0.6)
-    st.success(f"Displaying Glacier Mask for {selected_year}")
-else:
-    st.warning("GeoTIFF not found. Please make sure it's in the 'glacier_tiffs/' folder.")
+    # Line chart
+    st.subheader("📉 Glacier Area Over the Years")
+    fig = px.line(df, x='year', y='area_km2', markers=True,
+                  title="Glacier Retreat Trend",
+                  labels={"year": "Year", "area_km2": "Area (sq.km)"})
+    st.plotly_chart(fig, use_container_width=True)
 
-# Show map
-m.to_streamlit(height=600)
+    # Area loss summary
+    initial = df['area_km2'].max()
+    latest = df['area_km2'].min()
+    loss = initial - latest
+    st.metric("📉 Total Glacier Loss (2015–2023)", f"{loss:.2f} sq.km")
+
+    # Download button
+    st.download_button("📥 Download CSV", df.to_csv(index=False), file_name="Glacier_Area_Trend.csv", mime="text/csv")
+
+except Exception as e:
+    st.error("⚠️ Could not load CSV. Please make sure the file exists in your GitHub repo.")
+    st.exception(e)
