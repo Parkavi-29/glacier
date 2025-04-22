@@ -2,5 +2,5 @@ streamlit
 leafmap
 pandas
 plotly
-xarray
 rasterio
+xarray
