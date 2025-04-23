@@ -1,13 +1,33 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import leafmap.foliumap as leafmap
 
-# Setup
+# Setup page
 st.set_page_config(page_title="Glacier Melt Dashboard", layout="wide")
+
+# Background image style
+st.markdown(
+    """
+    <style>
+    .stApp {
+        background-image: url("https://c4.wallpaperflare.com/wallpaper/384/818/513/himalayas-mountains-landscape-nature-wallpaper-preview.jpg");
+        background-size: cover;
+        background-attachment: fixed;
+    }
+    .block-container {
+        background-color: rgba(255, 255, 255, 0.92);
+        padding: 2rem;
+        border-radius: 10px;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 # Sidebar Navigation
 st.sidebar.title("🧊 Glacier Dashboard")
-page = st.sidebar.radio("Navigate", ["Overview", "Chart View", "Prediction", "Alerts"])
+page = st.sidebar.radio("Navigate", ["Overview", "Chart View", "Prediction", "Alerts", "Map Overview"])
 
 # Load data
 csv_url = 'https://raw.githubusercontent.com/Parkavi-29/glacier/main/Glacier_Area_Trend.csv'
@@ -18,16 +38,19 @@ except Exception as e:
     st.exception(e)
     df = None
 
+# ------------------------
+# Pages Logic
+# ------------------------
 if df is not None:
     if page == "Overview":
         st.title("📋 Glacier Melt Analysis Web App")
-        st.markdown("This app visualizes glacier retreat and elevation trends using GEE data (2015–2023).")
+        st.markdown("This app visualizes glacier retreat and elevation trends using GEE data (2001–2023).")
         st.success("✅ Data loaded from GitHub!")
         st.dataframe(df)
 
     elif page == "Chart View":
         st.title("📈 Glacier Trend Charts")
-        st.subheader("Glacier Area Over the Years")
+        st.subheader("📉 Glacier Area Over the Years")
         fig_area = px.line(df, x='year', y='area_km2', markers=True,
                            title="Retreat Trend",
                            labels={"year": "Year", "area_km2": "Area (sq.km)"})
@@ -48,9 +71,8 @@ if df is not None:
 
     elif page == "Prediction":
         st.title("📊 Future Glacier Area Prediction")
-        st.info("🔄 Prediction module coming soon: will include forecast using machine learning.")
-        # Example placeholder for upcoming feature
-        st.markdown("⏳ Stay tuned for 2025/2030 forecasts using regression and environmental trends.")
+        st.info("🔄 Prediction module coming soon: will include ML-based regression.")
+        st.markdown("📅 Forecasts for 2025 and 2030 will be generated using trends and models.")
 
     elif page == "Alerts":
         st.title("🚨 Glacier Risk Alerts")
@@ -60,4 +82,10 @@ if df is not None:
             st.error(f"🚨 ALERT: Glacier area has dropped below {critical_threshold} sq.km! Current: {current_area:.2f} sq.km")
         else:
             st.success("✅ Glacier area is currently above critical threshold.")
-        st.markdown("⚙️ Future version will integrate automatic email/SMS alerts to stakeholders.")
+        st.markdown("📨 In future, this will include email/SMS notifications for high-risk changes.")
+
+    elif page == "Map Overview":
+        st.title("🗺️ Glacier Region Map Overview")
+        st.markdown("Visualizing glacier mask region with base map context.")
+        m = leafmap.Map(center=[30.95, 79.05], zoom=10)
+        m.to_streamlit(height=600)
