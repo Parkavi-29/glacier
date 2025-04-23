@@ -3,27 +3,29 @@ import pandas as pd
 import plotly.express as px
 import leafmap.foliumap as leafmap
 
-# Setup page
-st.set_page_config(page_title="Glacier Melt Dashboard", layout="wide")
-
-# Background image style
+# 🔥 Background Styling
 st.markdown(
     """
     <style>
     .stApp {
         background-image: url("https://c4.wallpaperflare.com/wallpaper/384/818/513/himalayas-mountains-landscape-nature-wallpaper-preview.jpg");
         background-size: cover;
+        background-position: center;
         background-attachment: fixed;
     }
-    .block-container {
-        background-color: rgba(255, 255, 255, 0.92);
+    .main > div {
+        background-color: rgba(255, 255, 255, 0.88);
         padding: 2rem;
         border-radius: 10px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
     }
     </style>
     """,
     unsafe_allow_html=True
 )
+
+# Setup page
+st.set_page_config(page_title="Glacier Melt Dashboard", layout="wide")
 
 # Sidebar Navigation
 st.sidebar.title("🧊 Glacier Dashboard")
