@@ -11,7 +11,7 @@ st.markdown(
     """
     <style>
     [data-testid="stAppViewContainer"] {
-        background-image: url("C:\Users\parka\Downloads\32229-1920x1280-desktop-hd-himalayas-background (1).jpg");
+        background-image: url("https://www.google.com/url?sa=i&url=https%3A%2F%2Fwallpapercat.com%2Fhimalayas-wallpapers&psig=AOvVaw2HGnC7IiXCC6DfMOFhcxJP&ust=1745507817419000&source=images&cd=vfe&opi=89978449&ved=0CBUQjRxqFwoTCPjGhMC57owDFQAAAAAdAAAAABAE");
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
