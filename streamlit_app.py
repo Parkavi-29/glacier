@@ -6,7 +6,7 @@ import leafmap.foliumap as leafmap
 # Set Streamlit config
 st.set_page_config(page_title="Glacier Melt Dashboard", layout="wide")
 
-# ✅ Apply background once
+# ✅ Background image + layout style
 st.markdown(
     """
     <style>
@@ -26,12 +26,13 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Sidebar
+# Sidebar navigation
 st.sidebar.title("🧊 Glacier Dashboard")
 page = st.sidebar.radio("Navigate", ["Overview", "Chart View", "Prediction", "Alerts", "Map Overview"])
 
-# Load data
-csv_url = 'https://raw.githubusercontent.com/Parkavi-29/glacier/main/Glacier_Area_Trend.csv'
+# ✅ Load updated CSV (2001–2023)
+csv_url = 'https://raw.githubusercontent.com/Parkavi-29/glacier/main/Glacier_Area_Elevation_Trend_2001_2023.csv'
+
 try:
     df = pd.read_csv(csv_url)
     st.success("✅ Data loaded from GitHub!")
@@ -40,22 +41,25 @@ except Exception as e:
     st.exception(e)
     df = None
 
+# -------------------------------
+# 🧊 Pages
+# -------------------------------
 if df is not None:
     if page == "Overview":
         st.title("📋 Glacier Melt Analysis Web App")
-        st.markdown("This app visualizes glacier retreat and elevation trends using GEE data (2001–2023).")
+        st.markdown("This dashboard visualizes glacier retreat and elevation trends (2001–2023) using Google Earth Engine (GEE).")
         st.dataframe(df)
 
     elif page == "Chart View":
         st.title("📈 Glacier Trend Charts")
         fig_area = px.line(df, x='year', y='area_km2', markers=True,
-                           title="Retreat Trend",
+                           title="Glacier Retreat Over Time",
                            labels={"year": "Year", "area_km2": "Area (sq.km)"})
         st.plotly_chart(fig_area, use_container_width=True)
 
         if 'mean_elevation_m' in df.columns:
             fig_elev = px.line(df, x='year', y='mean_elevation_m', markers=True,
-                               title="Elevation Change",
+                               title="Mean Elevation of Glacier (m)",
                                labels={"year": "Year", "mean_elevation_m": "Elevation (m)"})
             st.plotly_chart(fig_elev, use_container_width=True)
 
@@ -63,7 +67,7 @@ if df is not None:
         if 'mean_elevation_m' in df.columns:
             st.metric("📈 Elevation Change", f"{df['mean_elevation_m'].iloc[-1] - df['mean_elevation_m'].iloc[0]:.2f} m")
 
-        st.download_button("📥 Download CSV", df.to_csv(index=False), file_name="Glacier_Area_Trend.csv")
+        st.download_button("📥 Download CSV", df.to_csv(index=False), file_name="Glacier_Area_Elevation_Trend_2001_2023.csv")
 
     elif page == "Prediction":
         st.title("📊 Future Glacier Area Prediction")
@@ -77,10 +81,10 @@ if df is not None:
             st.error(f"🚨 ALERT: Glacier area dropped below {critical_threshold} sq.km! Current: {current_area:.2f} sq.km")
         else:
             st.success("✅ Glacier area is safe.")
-        st.markdown("📨 Future: Email/SMS alerts integration.")
+        st.markdown("📨 Future: Email/SMS alert system integration.")
 
     elif page == "Map Overview":
         st.title("🗺️ Glacier Region Map Overview")
-        st.markdown("Map centered around Gangotri glacier.")
+        st.markdown("Interactive map centered on Gangotri Glacier.")
         m = leafmap.Map(center=[30.95, 79.05], zoom=10)
         m.to_streamlit(height=600)
