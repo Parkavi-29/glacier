@@ -2,54 +2,70 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-# Setup
+# Setup the page
 st.set_page_config(page_title="Glacier Melt Analysis", layout="wide")
-st.title("🧊 Glacier Melt Analysis Web App")
-st.markdown("This app visualizes glacier retreat and elevation trends using GEE data (2015–2023).")
 
-# Load data from GitHub
+# Sidebar Navigation
+st.sidebar.title("🧊 Glacier Dashboard")
+page = st.sidebar.radio("Navigate", ["Overview", "Chart View", "Prediction", "Alerts"])
+
+# Load CSV from GitHub
 csv_url = 'https://raw.githubusercontent.com/Parkavi-29/glacier/main/Glacier_Area_Trend.csv'
-
 try:
     df = pd.read_csv(csv_url)
-    st.success("✅ Data loaded from GitHub!")
+except:
+    df = None
+    st.error("❌ Failed to load CSV data from GitHub.")
 
-    st.subheader("📋 Glacier Data Table")
-    st.dataframe(df)
+# Render each tab
+if df is not None:
 
-    # Glacier Area Line Chart
-    st.subheader("📉 Glacier Area Over the Years")
-    fig_area = px.line(df, x='year', y='area_km2', markers=True,
-                       title="Glacier Retreat Trend",
-                       labels={"year": "Year", "area_km2": "Area (sq.km)"})
-    st.plotly_chart(fig_area, use_container_width=True)
+    if page == "Overview":
+        st.title("📋 Glacier Melt Analysis Web App")
+        st.markdown("This app visualizes glacier retreat and elevation trends using GEE data (2015–2023).")
+        st.success("✅ Data loaded from GitHub!")
+        st.dataframe(df)
 
-    # Glacier Elevation Chart (if available)
-    if 'mean_elevation_m' in df.columns:
-        st.subheader("⛰️ Mean Elevation of Glacier (m)")
-        fig_elev = px.line(df, x='year', y='mean_elevation_m', markers=True,
-                           title="Mean Glacier Elevation Trend",
-                           labels={"year": "Year", "mean_elevation_m": "Elevation (m)"})
-        st.plotly_chart(fig_elev, use_container_width=True)
+    elif page == "Chart View":
+        st.title("📈 Glacier Trend Charts")
 
-    # Summary
-    total_loss = df['area_km2'].max() - df['area_km2'].min()
-    st.metric("📉 Total Glacier Loss", f"{total_loss:.2f} sq.km")
+        # Area chart
+        st.subheader("📉 Glacier Area Over the Years")
+        fig_area = px.line(df, x='year', y='area_km2', markers=True,
+                           title="Retreat Trend",
+                           labels={"year": "Year", "area_km2": "Area (sq.km)"})
+        st.plotly_chart(fig_area, use_container_width=True)
 
-    if 'mean_elevation_m' in df.columns:
-        elev_change = df['mean_elevation_m'].iloc[-1] - df['mean_elevation_m'].iloc[0]
-        st.metric("📈 Elevation Change", f"{elev_change:.2f} m")
+        # Elevation chart (if available)
+        if 'mean_elevation_m' in df.columns:
+            st.subheader("⛰️ Mean Elevation of Glacier (m)")
+            fig_elev = px.line(df, x='year', y='mean_elevation_m', markers=True,
+                               title="Elevation Change",
+                               labels={"year": "Year", "mean_elevation_m": "Elevation (m)"})
+            st.plotly_chart(fig_elev, use_container_width=True)
 
-    # 🚨 Visual Alert
-    critical_threshold = 160.0  # Adjust threshold if needed
-    current_area = df['area_km2'].iloc[-1]
+        # Summary metrics
+        st.metric("📉 Total Glacier Loss", f"{df['area_km2'].max() - df['area_km2'].min():.2f} sq.km")
+        if 'mean_elevation_m' in df.columns:
+            st.metric("📈 Elevation Change", f"{df['mean_elevation_m'].iloc[-1] - df['mean_elevation_m'].iloc[0]:.2f} m")
 
-    if current_area < critical_threshold:
-        st.error(f"🚨 ALERT: Glacier area has dropped below {critical_threshold} sq.km! Current: {current_area:.2f} sq.km")
+        # Download option
+        st.download_button("📥 Download CSV", df.to_csv(index=False), file_name="Glacier_Area_Trend.csv", mime="text/csv")
 
-    # Download button
-    st.download_button("📥 Download CSV", df.to_csv(index=False), file_name="Glacier_Area_Trend.csv", mime="text/csv")
+    elif page == "Prediction":
+        st.title("📊 Future Glacier Area Prediction")
+        st.info("🔮 Prediction feature coming soon: linear regression forecast for 2025, 2030, etc.")
 
-except Exception as e:
-    st.error("⚠️ Could not load or parse CSV.")
-    st.exception(e)
+    elif page == "Alerts":
+        st.title("🚨 Glacier Risk Alerts")
+        critical_threshold = 160.0
+        current_area = df['area_km2'].iloc[-1]
+        if current_area < critical_threshold:
+            st.error(f"🚨 ALERT: Glacier area has dropped below {critical_threshold} sq.km! Current: {current_area:.2f} sq.km")
+        else:
+            st.success("✅ Glacier area is currently above critical threshold.")
+
+        st.markdown("Configure this tab later to send automated messages via email or Telegram.")
+
+else:
+    st.warning("⚠️ Could not load or parse the CSV file. Please check the GitHub link or internet connection.")
