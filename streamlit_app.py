@@ -7,12 +7,14 @@ from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
 from statsmodels.tsa.arima.model import ARIMA
 from datetime import datetime
+import pytz
 
-# Page config
-st.set_page_config(page_title="Glacier Melt Dashboard", layout="wide")
+# Set timezone to IST
+ist = pytz.timezone('Asia/Kolkata')
+current_time_ist = datetime.now(ist).strftime('%Y-%m-%d %H:%M:%S')
 
-# Real-time Clock
-st.markdown(f"🕒 *Current Date & Time:* {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+# Real-time Clock in IST
+st.markdown(f"🕒 *Current Date & Time (IST):* {current_time_ist}")
 
 # Background + font adjustments
 st.markdown("""
@@ -36,6 +38,7 @@ h1, h2, h3 {
 }
 </style>
 """, unsafe_allow_html=True)
+
 
 # Sidebar
 st.sidebar.title("🧊 Glacier Dashboard")
