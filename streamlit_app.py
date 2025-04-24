@@ -13,7 +13,7 @@ st.markdown(
     """
     <style>
     [data-testid="stAppViewContainer"] {
-        background-image: url("https://c4.wallpaperflare.com/wallpaper/384/818/513/himalayas-mountains-landscape-nature-wallpaper-preview.jpg");
+        background-image: url("https://images.pexels.com/photos/1416900/pexels-photo-1416900.jpeg?cs=srgb&dl=pexels-rasikraj-1416900.jpg&fm=jpg");
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
@@ -33,7 +33,7 @@ st.sidebar.title("🧊 Glacier Dashboard")
 page = st.sidebar.radio("Navigate", ["Overview", "Chart View", "Prediction", "Alerts", "Map Overview"])
 
 # Load data
-csv_url = 'https://raw.githubusercontent.com/Parkavi-29/glacier/main/Glacier_Area_Trend.csv'
+csv_url = 'https://raw.githubusercontent.com/Parkavi-29/glacier/main/Glacier_Area_Elevation_Trend_2001_2023.csv'
 try:
     df = pd.read_csv(csv_url)
     st.success("✅ Data loaded from GitHub!")
