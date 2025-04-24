@@ -20,7 +20,7 @@ st.markdown(f"🕒 *Current Date & Time (IST):* {current_time_ist}")
 st.markdown("""
 <style>
 [data-testid="stAppViewContainer"] {
-    background-image: url("https://png.pngtree.com/thumb_back/fh260/background/20211116/pngtree-simple-blue-background-with-plain-and-cool-style-for-poster-design-image_916071.png");
+    background-image: url("https://w0.peakpx.com/wallpaper/262/173/HD-wallpaper-samsung-background-blue-edge-gradient-gray-plain-purple-simple-sky-thumbnail.jpg");
     background-size: cover;
     background-attachment: fixed;
     color: #2e2e2e;
