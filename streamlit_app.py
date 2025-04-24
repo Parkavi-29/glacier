@@ -2,9 +2,9 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import leafmap.foliumap as leafmap
-from sklearn.linear_model import LinearRegression
-from sklearn.preprocessing import PolynomialFeatures
 import numpy as np
+from sklearn.linear_model import LinearRegression
+from sklearn.ensemble import RandomForestRegressor
 
 # Set Streamlit config
 st.set_page_config(page_title="Glacier Melt Dashboard", layout="wide")
@@ -30,7 +30,7 @@ st.markdown(
 )
 
 # Sidebar navigation
-st.sidebar.title("🗊 Glacier Dashboard")
+st.sidebar.title("🧊 Glacier Dashboard")
 page = st.sidebar.radio("Navigate", ["Overview", "Chart View", "Prediction", "Alerts", "Map Overview"])
 
 # Load data
@@ -67,32 +67,28 @@ if df is not None:
         if 'mean_elevation_m' in df.columns:
             st.metric("📈 Elevation Change", f"{df['mean_elevation_m'].iloc[-1] - df['mean_elevation_m'].iloc[0]:.2f} m")
 
-        st.download_button("📅 Download CSV", df.to_csv(index=False), file_name="Glacier_Area_Trend.csv")
+        st.download_button("📥 Download CSV", df.to_csv(index=False), file_name="Glacier_Area_Trend.csv")
 
     elif page == "Prediction":
         st.title("📊 Future Glacier Area Prediction")
 
         if 'year' in df.columns and 'area_km2' in df.columns:
-            df_clean = df[df['area_km2'] > 0].dropna(subset=['year', 'area_km2'])
+            df_clean = df.dropna(subset=['year', 'area_km2'])
             X = df_clean['year'].values.reshape(-1, 1)
             y = df_clean['area_km2'].values.reshape(-1, 1)
 
-            # Polynomial Regression
-            poly = PolynomialFeatures(degree=2)
-            X_poly = poly.fit_transform(X)
+            # Use exponential regression
+            log_y = np.log(y.clip(min=1))  # Avoid log(0)
             model = LinearRegression()
-            model.fit(X_poly, y)
+            model.fit(X, log_y)
 
-            # Future years: every 5 years from 2025 to 2050
             future_years = np.arange(2025, 2051, 5).reshape(-1, 1)
-            future_poly = poly.transform(future_years)
-            predictions = model.predict(future_poly)
+            log_pred = model.predict(future_years)
+            predictions = np.exp(log_pred).clip(min=0)
 
-            # Show metrics
             for year, pred in zip(future_years.flatten(), predictions.flatten()):
-                st.metric(f"📊 Predicted Glacier Area ({year})", f"{pred:.2f} sq.km")
+                st.metric(f"📈 Predicted Glacier Area ({year})", f"{pred:.2f} sq.km")
 
-            # Combine for plotting
             future_df = pd.DataFrame({
                 'year': future_years.flatten(),
                 'area_km2': predictions.flatten(),
@@ -102,7 +98,6 @@ if df is not None:
             df_clean['type'] = 'Observed'
             combined_df = pd.concat([df_clean[['year', 'area_km2', 'type']], future_df])
 
-            # Plot
             fig_pred = px.line(combined_df, x='year', y='area_km2', color='type', markers=True,
                                title="Glacier Area Trend with Forecast (to 2050)",
                                labels={"year": "Year", "area_km2": "Area (sq.km)"})
