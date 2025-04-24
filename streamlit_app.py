@@ -5,34 +5,46 @@ import leafmap.foliumap as leafmap
 import numpy as np
 from sklearn.linear_model import LinearRegression
 
-# Set Streamlit config
+# Set page configuration
 st.set_page_config(page_title="Glacier Melt Dashboard", layout="wide")
 
-# Background image
+# Background and font style adjustments for your uploaded background image
 st.markdown(
-    """
+    f"""
     <style>
-    [data-testid="stAppViewContainer"] {
-        background-image: url("https://c02.purpledshub.com/uploads/sites/41/2023/08/Himalayas-Getty-e1691664200559-1024x684.jpg?w=1200");
+    [data-testid="stAppViewContainer"] {{
+        background-image: url("https://images.pexels.com/photos/1704120/pexels-photo-1704120.jpeg");
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
-    }
-    .main {
+        color: #2e2e2e;
+    }}
+    .main {{
         background-color: rgba(255, 255, 255, 0.88);
         padding: 2rem;
         border-radius: 10px;
-    }
+        color: #2e2e2e;
+    }}
+    h1, h2, h3, h4, h5, h6 {{
+        color: #0b3954 !important;
+    }}
+    .stMetric {{
+        color: #003049 !important;
+    }}
+    [data-testid="stSidebar"] {{
+        background-color: rgba(255, 255, 255, 0.75);
+        color: #003049;
+    }}
     </style>
     """,
     unsafe_allow_html=True
 )
 
 # Sidebar navigation
-st.sidebar.title("🧊 Glacier Dashboard")
+st.sidebar.title("🏊 Glacier Dashboard")
 page = st.sidebar.radio("Navigate", ["Overview", "Chart View", "Prediction", "Alerts", "Map Overview"])
 
-# Load data
+# Load data from GitHub
 csv_url = 'https://raw.githubusercontent.com/Parkavi-29/glacier/main/Glacier_Area_Elevation_Trend_2001_2023.csv'
 try:
     df = pd.read_csv(csv_url)
@@ -42,7 +54,6 @@ except Exception as e:
     st.exception(e)
     df = None
 
-# ------------------------ Pages ------------------------
 if df is not None:
     if page == "Overview":
         st.title("📋 Glacier Melt Analysis Web App")
@@ -66,7 +77,7 @@ if df is not None:
         if 'mean_elevation_m' in df.columns:
             st.metric("📈 Elevation Change", f"{df['mean_elevation_m'].iloc[-1] - df['mean_elevation_m'].iloc[0]:.2f} m")
 
-        st.download_button("📥 Download CSV", df.to_csv(index=False), file_name="Glacier_Area_Trend.csv")
+        st.download_button("📅 Download CSV", df.to_csv(index=False), file_name="Glacier_Area_Trend.csv")
 
     elif page == "Prediction":
         st.title("📊 Future Glacier Area Prediction")
@@ -76,8 +87,8 @@ if df is not None:
             X = df_clean['year'].values.reshape(-1, 1)
             y = df_clean['area_km2'].values.reshape(-1, 1)
 
-            # Exponential Regression (Linear on log scale)
-            log_y = np.log(y.clip(min=1))  # Avoid log(0)
+            # Use exponential regression for better glacier modeling
+            log_y = np.log(y.clip(min=1))
             model = LinearRegression()
             model.fit(X, log_y)
 
@@ -101,6 +112,7 @@ if df is not None:
                                title="Glacier Area Trend with Forecast (to 2050)",
                                labels={"year": "Year", "area_km2": "Area (sq.km)"})
             st.plotly_chart(fig_pred, use_container_width=True)
+
         else:
             st.warning("❗ Required columns 'year' and 'area_km2' not found in CSV.")
 
@@ -111,11 +123,11 @@ if df is not None:
         if current_area < critical_threshold:
             st.error(f"🚨 ALERT: Glacier area dropped below {critical_threshold} sq.km! Current: {current_area:.2f} sq.km")
         else:
-            st.success("✅ Glacier area is currently safe.")
-        st.markdown("📨 Future: Integrate email/SMS alerts system for real-time notifications.")
+            st.success("✅ Glacier area is safe.")
+        st.markdown("📨 Future: Email/SMS alerts integration.")
 
     elif page == "Map Overview":
-        st.title("🗺️ Glacier Region Map Overview")
+        st.title("🗘️ Glacier Region Map Overview")
         st.markdown("Map centered around Gangotri glacier.")
         m = leafmap.Map(center=[30.95, 79.05], zoom=10)
         m.to_streamlit(height=600)
