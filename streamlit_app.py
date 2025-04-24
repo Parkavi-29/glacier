@@ -2,16 +2,18 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import leafmap.foliumap as leafmap
+from sklearn.linear_model import LinearRegression
+import numpy as np
 
 # Set Streamlit config
 st.set_page_config(page_title="Glacier Melt Dashboard", layout="wide")
 
-# ✅ Background image + layout style
+# Background styling
 st.markdown(
     """
     <style>
     [data-testid="stAppViewContainer"] {
-        background-image: url("https://w0.peakpx.com/wallpaper/763/267/HD-wallpaper-himalayas-cool-snow-mountains.jpg");
+        background-image: url("https://c4.wallpaperflare.com/wallpaper/384/818/513/himalayas-mountains-landscape-nature-wallpaper-preview.jpg");
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
@@ -26,13 +28,12 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Sidebar navigation
+# Sidebar
 st.sidebar.title("🧊 Glacier Dashboard")
 page = st.sidebar.radio("Navigate", ["Overview", "Chart View", "Prediction", "Alerts", "Map Overview"])
 
-# ✅ Load updated CSV (2001–2023)
+# Load data
 csv_url = 'https://raw.githubusercontent.com/Parkavi-29/glacier/main/Glacier_Area_Elevation_Trend_2001_2023.csv'
-
 try:
     df = pd.read_csv(csv_url)
     st.success("✅ Data loaded from GitHub!")
@@ -41,25 +42,22 @@ except Exception as e:
     st.exception(e)
     df = None
 
-# -------------------------------
-# 🧊 Pages
-# -------------------------------
 if df is not None:
     if page == "Overview":
         st.title("📋 Glacier Melt Analysis Web App")
-        st.markdown("This dashboard visualizes glacier retreat and elevation trends (2001–2023) using Google Earth Engine (GEE).")
+        st.markdown("This app visualizes glacier retreat and elevation trends using GEE data (2001–2023).")
         st.dataframe(df)
 
     elif page == "Chart View":
         st.title("📈 Glacier Trend Charts")
         fig_area = px.line(df, x='year', y='area_km2', markers=True,
-                           title="Glacier Retreat Over Time",
+                           title="Retreat Trend",
                            labels={"year": "Year", "area_km2": "Area (sq.km)"})
         st.plotly_chart(fig_area, use_container_width=True)
 
         if 'mean_elevation_m' in df.columns:
             fig_elev = px.line(df, x='year', y='mean_elevation_m', markers=True,
-                               title="Mean Elevation of Glacier (m)",
+                               title="Elevation Change",
                                labels={"year": "Year", "mean_elevation_m": "Elevation (m)"})
             st.plotly_chart(fig_elev, use_container_width=True)
 
@@ -67,11 +65,33 @@ if df is not None:
         if 'mean_elevation_m' in df.columns:
             st.metric("📈 Elevation Change", f"{df['mean_elevation_m'].iloc[-1] - df['mean_elevation_m'].iloc[0]:.2f} m")
 
-        st.download_button("📥 Download CSV", df.to_csv(index=False), file_name="Glacier_Area_Elevation_Trend_2001_2023.csv")
+        st.download_button("📥 Download CSV", df.to_csv(index=False), file_name="Glacier_Area_Trend.csv")
 
     elif page == "Prediction":
         st.title("📊 Future Glacier Area Prediction")
-        st.info("🔄 Coming soon: ML-based forecasts for 2025 & 2030.")
+
+        # Prepare data
+        X = df[['year']]
+        y = df['area_km2']
+        model = LinearRegression()
+        model.fit(X, y)
+
+        # Predict for 2025 and 2030
+        future_years = pd.DataFrame({'year': [2025, 2030]})
+        predictions = model.predict(future_years)
+
+        st.subheader("🔮 Forecasted Glacier Area")
+        for year, pred in zip(future_years['year'], predictions):
+            st.write(f"📌 **{year}**: {pred:.2f} sq.km")
+
+        # Plot future with original
+        df_future = pd.DataFrame({'year': future_years['year'], 'area_km2': predictions})
+        df_combined = pd.concat([df, df_future])
+
+        fig_forecast = px.line(df_combined, x='year', y='area_km2', markers=True,
+                               title="Forecasted Glacier Area (2025 & 2030)",
+                               labels={"year": "Year", "area_km2": "Area (sq.km)"})
+        st.plotly_chart(fig_forecast, use_container_width=True)
 
     elif page == "Alerts":
         st.title("🚨 Glacier Risk Alerts")
@@ -81,10 +101,10 @@ if df is not None:
             st.error(f"🚨 ALERT: Glacier area dropped below {critical_threshold} sq.km! Current: {current_area:.2f} sq.km")
         else:
             st.success("✅ Glacier area is safe.")
-        st.markdown("📨 Future: Email/SMS alert system integration.")
+        st.markdown("📨 Future: Email/SMS alerts integration.")
 
     elif page == "Map Overview":
         st.title("🗺️ Glacier Region Map Overview")
-        st.markdown("Interactive map centered on Gangotri Glacier.")
+        st.markdown("Map centered around Gangotri glacier.")
         m = leafmap.Map(center=[30.95, 79.05], zoom=10)
         m.to_streamlit(height=600)
