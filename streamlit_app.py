@@ -23,20 +23,6 @@ st.markdown(f"""
 # Background + font adjustments
 st.markdown("""
 <style>
-/* Make main content take full width */
-.css-18e3th9 {
-    padding-left: 2rem;
-    padding-right: 2rem;
-    max-width: 95% !important;
-}
-
-/* Optional: make text area wider */
-.block-container {
-    max-width: 95% !important;
-    padding: 2rem 2rem;
-}
-
-/* Background and general UI styling */
 [data-testid="stAppViewContainer"] {
     background-image: url("https://w0.peakpx.com/wallpaper/262/173/HD-wallpaper-samsung-background-blue-edge-gradient-gray-plain-purple-simple-sky-thumbnail.jpg");
     background-size: cover;
@@ -56,6 +42,7 @@ h1, h2, h3 {
 }
 </style>
 """, unsafe_allow_html=True)
+
 
 # Sidebar
 st.sidebar.title("🧊 Glacier Dashboard")
