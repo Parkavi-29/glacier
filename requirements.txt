@@ -3,3 +3,4 @@ pandas
 plotly
 leafmap
 scikit-learn
+statsmodels
