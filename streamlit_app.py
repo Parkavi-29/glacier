@@ -11,10 +11,14 @@ import pytz
 
 # Set timezone to IST
 ist = pytz.timezone('Asia/Kolkata')
-current_time_ist = datetime.now(ist).strftime('%Y-%m-%d %H:%M:%S')
+current_time_ist = datetime.now(ist).strftime('%Y-%m-%d %H:%M:%S').upper()
 
-# Real-time Clock in IST
-st.markdown(f"🕒 *Current Date & Time (IST):* {current_time_ist}")
+# Real-time Clock in IST (Uppercase & Larger Font)
+st.markdown(f"""
+<div style="font-size: 24px; font-weight: bold; text-transform: uppercase;">
+🕒 Current Date & Time (IST): {current_time_ist}
+</div>
+""", unsafe_allow_html=True)
 
 # Background + font adjustments
 st.markdown("""
@@ -38,6 +42,7 @@ h1, h2, h3 {
 }
 </style>
 """, unsafe_allow_html=True)
+
 
 
 # Sidebar
