@@ -14,7 +14,7 @@ st.markdown(
     """
     <style>
     [data-testid="stAppViewContainer"] {
-        background-image: url("https://images.pexels.com/photos/1416900/pexels-photo-1416900.jpeg");
+        background-image: url("https://img.freepik.com/free-photo/beautiful-scenery-summit-mount-everest-covered-with-snow-white-clouds_181624-21317.jpg?semt=ais_hybrid&w=740");
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
