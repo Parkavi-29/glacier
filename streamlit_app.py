@@ -4,12 +4,11 @@ import plotly.express as px
 import leafmap.foliumap as leafmap
 import numpy as np
 from sklearn.linear_model import LinearRegression
-from streamlit_chat import message
 
 # Set page configuration
 st.set_page_config(page_title="Glacier Melt Dashboard", layout="wide")
 
-# Background and font style adjustments
+# Background and font style adjustments for gradient background
 st.markdown(
     f"""
     <style>
@@ -55,7 +54,6 @@ except Exception as e:
     st.exception(e)
     df = None
 
-# Pages
 if df is not None:
     if page == "Overview":
         st.title("📋 Glacier Melt Analysis Web App")
@@ -89,7 +87,7 @@ if df is not None:
             X = df_clean['year'].values.reshape(-1, 1)
             y = df_clean['area_km2'].values.reshape(-1, 1)
 
-            # Exponential regression
+            # Exponential regression for modeling decay
             log_y = np.log(y.clip(min=1))
             model = LinearRegression()
             model.fit(X, log_y)
@@ -114,6 +112,7 @@ if df is not None:
                                title="Glacier Area Trend with Forecast (to 2050)",
                                labels={"year": "Year", "area_km2": "Area (sq.km)"})
             st.plotly_chart(fig_pred, use_container_width=True)
+
         else:
             st.warning("❗ Required columns 'year' and 'area_km2' not found in CSV.")
 
@@ -128,37 +127,25 @@ if df is not None:
         st.markdown("📨 Future: Email/SMS alerts integration.")
 
     elif page == "Map Overview":
-        st.title("🖘️ Glacier Region Map Overview")
+        st.title("🗘️ Glacier Region Map Overview")
         st.markdown("Map centered around Gangotri glacier.")
         m = leafmap.Map(center=[30.95, 79.05], zoom=10)
         m.to_streamlit(height=600)
 
-# Chatbot
-if "chat_history" not in st.session_state:
-    st.session_state.chat_history = []
-
-if st.sidebar.checkbox("💬 Open Chatbot"):
-    st.title("🧑‍🤖 Glacier Assistant")
-
-    user_input = st.text_input("Ask me about glacier trends, predictions, or data...")
-
-    def chatbot_response(user_msg):
-        user_msg = user_msg.lower()
-        if "prediction" in user_msg:
-            return "The glacier area is forecasted using exponential regression through 2050. 📉"
-        elif "download" in user_msg:
-            return "You can download the glacier data CSV from the 'Chart View' tab."
-        elif "safe" in user_msg or "alert" in user_msg:
-            return f"The glacier safety threshold is 160 sq.km. Check the 'Alerts' tab for real-time updates. 🚨"
-        elif "map" in user_msg:
-            return "The glacier region is visualized near Gangotri using interactive maps in the 'Map Overview'."
-        else:
-            return "I'm here to help! Ask about glacier loss, forecasts, or using the dashboard."
+# ------------------------
+# 💬 Simple Chatbot in Sidebar
+# ------------------------
+with st.sidebar.expander("💬 Glacier Assistant"):
+    st.markdown("Ask me about glaciers, trends, or predictions!")
+    user_input = st.text_input("You:", placeholder="e.g., What is glacier retreat?")
 
     if user_input:
-        st.session_state.chat_history.append(("user", user_input))
-        response = chatbot_response(user_input)
-        st.session_state.chat_history.append(("bot", response))
-
-    for role, text in st.session_state.chat_history:
-        message(text, is_user=(role == "user"))
+        user_input_lower = user_input.lower()
+        if "glacier" in user_input_lower and "retreat" in user_input_lower:
+            st.write("🤖: Glacier retreat is the process of glaciers shrinking over time due to melting.")
+        elif "prediction" in user_input_lower or "2030" in user_input_lower:
+            st.write("🤖: The glacier area is expected to continue declining through 2030 based on current trends.")
+        elif "elevation" in user_input_lower:
+            st.write("🤖: Elevation trends show variation but generally relate to melting behavior.")
+        else:
+            st.write("🤖: I'm still learning! Try asking about glacier retreat, predictions, or elevation.")
