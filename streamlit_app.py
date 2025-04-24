@@ -14,7 +14,7 @@ st.markdown(
     """
     <style>
     [data-testid="stAppViewContainer"] {
-        background-image: url("https://c02.purpledshub.com/uploads/sites/41/2023/08/Himalayas-Getty-e1691664200559-1024x684.jpg?w=1200");
+        background-image: url("https://images.pexels.com/photos/1416900/pexels-photo-1416900.jpeg?cs=srgb&dl=pexels-rasikraj-1416900.jpg&fm=jpg");
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
