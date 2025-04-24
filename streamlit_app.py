@@ -13,7 +13,7 @@ st.markdown(
     f"""
     <style>
     [data-testid="stAppViewContainer"] {{
-        background-image: url("https://images.pexels.com/photos/1704120/pexels-photo-1704120.jpeg");
+        background-image: url("https://w0.peakpx.com/wallpaper/262/173/HD-wallpaper-samsung-background-blue-edge-gradient-gray-plain-purple-simple-sky-thumbnail.jpg");
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
