@@ -11,7 +11,7 @@ st.markdown(
     """
     <style>
     [data-testid="stAppViewContainer"] {
-        background-image: url("https://c4.wallpaperflare.com/wallpaper/384/818/513/himalayas-mountains-landscape-nature-wallpaper-preview.jpg");
+        background-image: url("https://www.google.com/url?sa=i&url=https%3A%2F%2Fwall.alphacoders.com%2Fbig.php%3Fi%3D547101&psig=AOvVaw3x8mCm_VP17_vadFKLAfpj&ust=1745556136721000&source=images&cd=vfe&opi=89978449&ved=0CBUQjRxqFwoTCMiS88Dt74wDFQAAAAAdAAAAABAJ");
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
