@@ -8,7 +8,7 @@ import numpy as np
 # Set Streamlit config
 st.set_page_config(page_title="Glacier Melt Dashboard", layout="wide")
 
-# Background styling
+# Background image
 st.markdown(
     """
     <style>
@@ -28,12 +28,12 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Sidebar
+# Sidebar navigation
 st.sidebar.title("🧊 Glacier Dashboard")
 page = st.sidebar.radio("Navigate", ["Overview", "Chart View", "Prediction", "Alerts", "Map Overview"])
 
 # Load data
-csv_url = 'https://raw.githubusercontent.com/Parkavi-29/glacier/main/Glacier_Area_Elevation_Trend_2001_2023.csv'
+csv_url = 'https://raw.githubusercontent.com/Parkavi-29/glacier/main/Glacier_Area_Trend.csv'
 try:
     df = pd.read_csv(csv_url)
     st.success("✅ Data loaded from GitHub!")
@@ -42,6 +42,7 @@ except Exception as e:
     st.exception(e)
     df = None
 
+# ------------------------ Pages ------------------------
 if df is not None:
     if page == "Overview":
         st.title("📋 Glacier Melt Analysis Web App")
@@ -70,28 +71,36 @@ if df is not None:
     elif page == "Prediction":
         st.title("📊 Future Glacier Area Prediction")
 
-        # Prepare data
-        X = df[['year']]
-        y = df['area_km2']
-        model = LinearRegression()
-        model.fit(X, y)
+        if 'year' in df.columns and 'area_km2' in df.columns:
+            df_clean = df.dropna(subset=['year', 'area_km2'])
+            X = df_clean['year'].values.reshape(-1, 1)
+            y = df_clean['area_km2'].values.reshape(-1, 1)
 
-        # Predict for 2025 and 2030
-        future_years = pd.DataFrame({'year': [2025, 2030]})
-        predictions = model.predict(future_years)
+            model = LinearRegression()
+            model.fit(X, y)
 
-        st.subheader("🔮 Forecasted Glacier Area")
-        for year, pred in zip(future_years['year'], predictions):
-            st.write(f"📌 **{year}**: {pred:.2f} sq.km")
+            future_years = np.array([2025, 2030]).reshape(-1, 1)
+            predictions = model.predict(future_years)
 
-        # Plot future with original
-        df_future = pd.DataFrame({'year': future_years['year'], 'area_km2': predictions})
-        df_combined = pd.concat([df, df_future])
+            for year, pred in zip(future_years.flatten(), predictions.flatten()):
+                st.metric(f"📈 Predicted Glacier Area ({year})", f"{pred:.2f} sq.km")
 
-        fig_forecast = px.line(df_combined, x='year', y='area_km2', markers=True,
-                               title="Forecasted Glacier Area (2025 & 2030)",
+            future_df = pd.DataFrame({
+                'year': future_years.flatten(),
+                'area_km2': predictions.flatten(),
+                'type': 'Predicted'
+            })
+
+            df_clean['type'] = 'Observed'
+            combined_df = pd.concat([df_clean[['year', 'area_km2', 'type']], future_df])
+
+            fig_pred = px.line(combined_df, x='year', y='area_km2', color='type', markers=True,
+                               title="Glacier Area Trend with Forecast",
                                labels={"year": "Year", "area_km2": "Area (sq.km)"})
-        st.plotly_chart(fig_forecast, use_container_width=True)
+            st.plotly_chart(fig_pred, use_container_width=True)
+
+        else:
+            st.warning("❗ Required columns 'year' and 'area_km2' not found in CSV.")
 
     elif page == "Alerts":
         st.title("🚨 Glacier Risk Alerts")
