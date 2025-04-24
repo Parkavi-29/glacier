@@ -4,7 +4,6 @@ import plotly.express as px
 import leafmap.foliumap as leafmap
 import numpy as np
 from sklearn.linear_model import LinearRegression
-from sklearn.ensemble import RandomForestRegressor
 
 # Set Streamlit config
 st.set_page_config(page_title="Glacier Melt Dashboard", layout="wide")
@@ -77,7 +76,7 @@ if df is not None:
             X = df_clean['year'].values.reshape(-1, 1)
             y = df_clean['area_km2'].values.reshape(-1, 1)
 
-            # Use exponential regression
+            # Exponential Regression (Linear on log scale)
             log_y = np.log(y.clip(min=1))  # Avoid log(0)
             model = LinearRegression()
             model.fit(X, log_y)
@@ -98,4 +97,25 @@ if df is not None:
             df_clean['type'] = 'Observed'
             combined_df = pd.concat([df_clean[['year', 'area_km2', 'type']], future_df])
 
-           …
+            fig_pred = px.line(combined_df, x='year', y='area_km2', color='type', markers=True,
+                               title="Glacier Area Trend with Forecast (to 2050)",
+                               labels={"year": "Year", "area_km2": "Area (sq.km)"})
+            st.plotly_chart(fig_pred, use_container_width=True)
+        else:
+            st.warning("❗ Required columns 'year' and 'area_km2' not found in CSV.")
+
+    elif page == "Alerts":
+        st.title("🚨 Glacier Risk Alerts")
+        critical_threshold = 160.0
+        current_area = df['area_km2'].iloc[-1]
+        if current_area < critical_threshold:
+            st.error(f"🚨 ALERT: Glacier area dropped below {critical_threshold} sq.km! Current: {current_area:.2f} sq.km")
+        else:
+            st.success("✅ Glacier area is currently safe.")
+        st.markdown("📨 Future: Integrate email/SMS alerts system for real-time notifications.")
+
+    elif page == "Map Overview":
+        st.title("🗺️ Glacier Region Map Overview")
+        st.markdown("Map centered around Gangotri glacier.")
+        m = leafmap.Map(center=[30.95, 79.05], zoom=10)
+        m.to_streamlit(height=600)
