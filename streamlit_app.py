@@ -11,7 +11,7 @@ st.markdown(
     """
     <style>
     [data-testid="stAppViewContainer"] {
-        background-image: url("https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.peakpx.com%2Fen%2Fhd-wallpaper-desktop-fixmk&psig=AOvVaw3x8mCm_VP17_vadFKLAfpj&ust=1745556136721000&source=images&cd=vfe&opi=89978449&ved=0CBUQjRxqFwoTCMiS88Dt74wDFQAAAAAdAAAAABAR");
+        background-image: url("https://w0.peakpx.com/wallpaper/763/267/HD-wallpaper-himalayas-cool-snow-mountains.jpg");
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
