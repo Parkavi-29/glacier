@@ -13,14 +13,14 @@ import pytz
 ist = pytz.timezone('Asia/Kolkata')
 current_time_ist = datetime.now(ist).strftime('%Y-%m-%d %H:%M:%S').upper()
 
-# Real-time Clock in IST (Uppercase & Larger Font)
+# Real-time Clock
 st.markdown(f"""
 <div style="font-size: 24px; font-weight: bold; text-transform: uppercase;">
 🕒 Current Date & Time (IST): {current_time_ist}
 </div>
 """, unsafe_allow_html=True)
 
-# Background + font adjustments
+# Background Styling
 st.markdown("""
 <style>
 [data-testid="stAppViewContainer"] {
@@ -43,38 +43,32 @@ h1, h2, h3 {
 </style>
 """, unsafe_allow_html=True)
 
-
 # Sidebar
 st.sidebar.title("🧊 Glacier Dashboard")
 page = st.sidebar.radio("Navigate", ["Overview", "Chart View", "Prediction", "Alerts", "Map Overview"])
 
-# Load Data
-csv_url = 'https://raw.githubusercontent.com/Parkavi-29/glacier/main/Glacier_Area_Elevation_Trend_2001_2023.csv'
+# Load Glacier Area CSV
+csv_url = 'https://raw.githubusercontent.com/Parkavi-29/glacier/main/Gangotri_Glacier_Area_NDSI_2001_2023.csv'
 try:
     df = pd.read_csv(csv_url)
-    df = df.dropna(subset=['year', 'area_km2'])  # Clean
+    df = df.dropna(subset=['year', 'area_km2'])
     st.success("✅ Data loaded from GitHub!")
 except Exception as e:
     st.error("❌ Failed to load CSV data.")
     st.exception(e)
     df = None
 
-# Content
+# Pages Logic
 if df is not None:
     if page == "Overview":
         st.title("📋 Glacier Melt Analysis Web App")
-        st.markdown("This app visualizes glacier retreat and elevation trends using GEE data (2001–2023).")
+        st.markdown("This app visualizes Gangotri glacier retreat using GEE (2001–2023) without DEM filtering.")
         st.dataframe(df)
 
     elif page == "Chart View":
         st.title("📈 Glacier Trend Charts")
-        fig_area = px.line(df, x='year', y='area_km2', markers=True, title="Retreat Trend")
+        fig_area = px.line(df, x='year', y='area_km2', markers=True, title="Observed Glacier Retreat")
         st.plotly_chart(fig_area, use_container_width=True)
-
-        if 'mean_elevation_m' in df.columns:
-            fig_elev = px.line(df, x='year', y='mean_elevation_m', markers=True, title="Elevation Trend")
-            st.plotly_chart(fig_elev, use_container_width=True)
-
         st.metric("📉 Total Glacier Loss", f"{df['area_km2'].max() - df['area_km2'].min():.2f} sq.km")
 
     elif page == "Prediction":
@@ -84,6 +78,7 @@ if df is not None:
         X = df_model['year'].values.reshape(-1, 1)
         y = df_model['area_km2'].values.reshape(-1, 1)
 
+        # Polynomial Regression Forecast
         st.subheader("📉 Polynomial Regression Forecast (to 2050)")
         poly = PolynomialFeatures(degree=2)
         X_poly = poly.fit_transform(X)
@@ -99,41 +94,43 @@ if df is not None:
             'type': 'Predicted'
         })
         df_model['type'] = 'Observed'
-
         full_df = pd.concat([df_model[['year', 'area_km2', 'type']], pred_df])
-        fig = px.line(full_df, x='year', y='area_km2', color='type', markers=True, title="Polynomial Regression Forecast")
+
+        fig = px.line(full_df, x='year', y='area_km2', color='type', markers=True,
+                      title="Glacier Area Forecast (Polynomial Regression)")
         st.plotly_chart(fig, use_container_width=True)
 
-        # Display metrics
-        for y, p in zip(future_years.flatten(), pred_poly.flatten()):
-            st.metric(f"📈 Predicted Area ({y})", f"{p:.2f} sq.km")
+        for year, value in zip(future_years.flatten(), pred_poly.flatten()):
+            st.metric(f"📈 Predicted Area ({year})", f"{value:.2f} sq.km")
 
-        # Time Series Forecast (ARIMA)
+        # ARIMA Forecast
         st.subheader("📊 ARIMA Time Series Forecast (next 10 years)")
         try:
             model_arima = ARIMA(df_model['area_km2'], order=(1, 1, 1))
             model_fit = model_arima.fit()
             forecast = model_fit.forecast(steps=10)
-            future_years_arima = np.arange(df_model['year'].iloc[-1]+1, df_model['year'].iloc[-1]+11)
+            future_years_arima = np.arange(df_model['year'].iloc[-1] + 1, df_model['year'].iloc[-1] + 11)
             arima_df = pd.DataFrame({'year': future_years_arima, 'area_km2': forecast, 'type': 'ARIMA Forecast'})
+
             all_df = pd.concat([df_model[['year', 'area_km2', 'type']], arima_df])
-            fig_arima = px.line(all_df, x='year', y='area_km2', color='type', title="ARIMA Forecast")
+            fig_arima = px.line(all_df, x='year', y='area_km2', color='type',
+                                title="ARIMA Forecast - Glacier Area")
             st.plotly_chart(fig_arima, use_container_width=True)
         except Exception as e:
-            st.warning("⚠️ ARIMA failed to fit. Try different parameters.")
+            st.warning("⚠️ ARIMA forecast failed. Consider changing the model parameters.")
 
     elif page == "Alerts":
         st.title("🚨 Glacier Risk Alerts")
         latest_area = df['area_km2'].iloc[-1]
-        threshold = 160.0
+        threshold = 20.0
         if latest_area < threshold:
-            st.error(f"⚠️ Critical Alert! Glacier area has fallen below {threshold} sq.km. Current: {latest_area:.2f}")
-        elif latest_area < threshold + 20:
-            st.warning(f"🟡 Moderate Risk: Glacier area nearing critical threshold. Current: {latest_area:.2f}")
+            st.error(f"🔴 Critical Alert: Glacier area below {threshold} sq.km. Current: {latest_area:.2f}")
+        elif latest_area < threshold + 5:
+            st.warning(f"🟡 Warning: Glacier nearing critical levels. Current: {latest_area:.2f}")
         else:
-            st.success(f"🟢 Safe: Current glacier area is {latest_area:.2f} sq.km")
+            st.success(f"🟢 Glacier stable. Current area: {latest_area:.2f} sq.km")
 
     elif page == "Map Overview":
-        st.title("🗺️ Gangotri Glacier Map")
-        m = leafmap.Map(center=[30.95, 79.05], zoom=10)
+        st.title("🗺️ Gangotri Glacier Map Overview")
+        m = leafmap.Map(center=[30.9, 79.1], zoom=10)
         m.to_streamlit(height=600)
