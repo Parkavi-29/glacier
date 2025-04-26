@@ -8,7 +8,6 @@ from sklearn.preprocessing import PolynomialFeatures
 from statsmodels.tsa.arima.model import ARIMA
 from datetime import datetime
 import pytz
-import openai
 
 # -------------------
 # Setup
@@ -16,10 +15,15 @@ import openai
 ist = pytz.timezone('Asia/Kolkata')
 current_time_ist = datetime.now(ist).strftime('%Y-%m-%d %H:%M:%S').upper()
 
-# Streamlit Config
-st.set_page_config(layout="wide", page_title="Glacier Melt Dashboard")
+# Set page config to wide
+st.set_page_config(layout="wide")
 
-# Background + Fonts
+# Clock at top
+# ------------------- #
+# Clock at top-left   #
+# ------------------- #
+
+# Background + fonts (Catamaran)
 st.markdown("""
 <link href="https://fonts.googleapis.com/css2?family=Catamaran:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
@@ -33,44 +37,27 @@ st.markdown("""
     background-color: rgba(255, 255, 255, 0.88);
     padding: 2rem;
     border-radius: 10px;
+    font-family: 'Catamaran', sans-serif;
 }
 h1, h2, h3 {
     color: #0b3954 !important;
     font-family: 'Catamaran', sans-serif;
+    font-weight: 700;
 }
 [data-testid="stSidebar"] {
     background-color: rgba(255, 255, 255, 0.75);
+    font-family: 'Catamaran', sans-serif;
 }
 </style>
 """, unsafe_allow_html=True)
 
-# Clock
-st.markdown(f"""
-<div style="font-size: 24px; font-weight: bold; text-transform: uppercase;">
-🕒 Current Date & Time (IST): {current_time_ist}
-</div>
-""", unsafe_allow_html=True)
+
 
 # -------------------
 # Sidebar navigation
 # -------------------
-st.sidebar.title("🧊 Glacier Dashboard")
+st.sidebar.title("🧨 Glacier Dashboard")
 page = st.sidebar.radio("Navigate", ["Overview", "Chart View", "Prediction", "Alerts", "Map Overview"])
-
-# -------------------
-# Simple Chatbot in Sidebar
-# -------------------
-st.sidebar.title("💬 Ask GlacierBot!")
-user_prompt = st.sidebar.text_input("Ask a question about glaciers:")
-if user_prompt:
-    openai.api_key = st.secrets["OPENAI_API_KEY"]  # Reads from secrets.toml
-
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=[{"role": "user", "content": user_prompt}]
-    )
-    reply = response['choices'][0]['message']['content']
-    st.sidebar.markdown(f"**GlacierBot 🤖:** {reply}")
 
 # -------------------
 # Load Glacier CSV
@@ -91,7 +78,7 @@ except Exception as e:
 if df is not None:
     if page == "Overview":
         st.title("📋 Glacier Melt Analysis (Gangotri)")
-        st.markdown("Analyzing Gangotri Glacier retreat from Landsat Data (NDSI-based, 2001-2023).")
+        st.markdown("Analyzing Gangotri Glacier retreat from Landsat Data (NDSI-based, 2001-2023)")
         st.dataframe(df, use_container_width=True)
 
     elif page == "Chart View":
@@ -159,12 +146,10 @@ if df is not None:
     elif page == "Map Overview":
         st.title("🗺 Gangotri Glacier Map Overview")
         m = leafmap.Map(center=[30.96, 79.08], zoom=11)
-        m.to_streamlit(height=600)
 
-# -------------------
-# Disclaimer
-# -------------------
-st.markdown("""
----
-🧠 **Note**: This chatbot is powered by OpenAI GPT-3.5 API. Responses are AI-generated and for informational purposes only.
-""")
+        # You can add glacier raster layer here if you have it
+        # m.add_raster('https://yourlink.com/glacier_mask.tif', layer_name='Glacier Mask')
+
+        m.to_streamlit(height=600) 
+
+
