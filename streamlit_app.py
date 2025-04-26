@@ -15,6 +15,9 @@ import pytz
 ist = pytz.timezone('Asia/Kolkata')
 current_time_ist = datetime.now(ist).strftime('%Y-%m-%d %H:%M:%S').upper()
 
+# Set page config to wide
+st.set_page_config(layout="wide")
+
 # Clock at top
 st.markdown(f"""
 <div style="font-size: 24px; font-weight: bold; text-transform: uppercase;">
@@ -70,7 +73,7 @@ if df is not None:
     if page == "Overview":
         st.title("📋 Glacier Melt Analysis (Gangotri)")
         st.markdown("Analyzing Gangotri Glacier retreat from Landsat Data (NDSI-based, 2001-2023)")
-        st.dataframe(df)
+        st.dataframe(df, use_container_width=True)
 
     elif page == "Chart View":
         st.title("📈 Glacier Retreat Trends")
