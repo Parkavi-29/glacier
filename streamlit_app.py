@@ -23,33 +23,34 @@ st.set_page_config(layout="wide")
 # Clock at top-left   #
 # ------------------- #
 
-st.markdown(f"""
-<div style="font-size: 24px; font-weight: bold; text-transform: uppercase;">
-🕒 Current Date & Time (IST): {current_time_ist}
-</div>
-""", unsafe_allow_html=True)
-
-# Background + fonts
+# Background + fonts (Catamaran)
 st.markdown("""
+<link href="https://fonts.googleapis.com/css2?family=Catamaran:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 [data-testid="stAppViewContainer"] {
     background-image: url("https://i.pinimg.com/736x/f4/53/7f/f4537f4d86850471d5642c7beea07bbd.jpg");
     background-size: cover;
     background-attachment: fixed;
+    font-family: 'Catamaran', sans-serif;
 }
 .main {
     background-color: rgba(255, 255, 255, 0.88);
     padding: 2rem;
     border-radius: 10px;
+    font-family: 'Catamaran', sans-serif;
 }
 h1, h2, h3 {
     color: #0b3954 !important;
+    font-family: 'Catamaran', sans-serif;
+    font-weight: 700;
 }
 [data-testid="stSidebar"] {
     background-color: rgba(255, 255, 255, 0.75);
+    font-family: 'Catamaran', sans-serif;
 }
 </style>
 """, unsafe_allow_html=True)
+
 
 
 # -------------------
