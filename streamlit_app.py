@@ -29,7 +29,7 @@ st.markdown(f"""
 st.markdown("""
 <style>
 [data-testid="stAppViewContainer"] {
-    background-image: url("https://wallpapercave.com/wp/wp6565520.jpg");
+    background-image: url("https://i.pinimg.com/736x/f4/53/7f/f4537f4d86850471d5642c7beea07bbd.jpg");
     background-size: cover;
     background-attachment: fixed;
 }
