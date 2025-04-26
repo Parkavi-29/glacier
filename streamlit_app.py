@@ -9,12 +9,19 @@ from statsmodels.tsa.arima.model import ARIMA
 from datetime import datetime
 import pytz
 
-# ------------------- Setup -------------------
+# ------------------- SETUP -------------------
 ist = pytz.timezone('Asia/Kolkata')
 current_time_ist = datetime.now(ist).strftime('%Y-%m-%d %H:%M:%S').upper()
 st.set_page_config(layout="wide")
 
-# ------------------- Styling -------------------
+# ------------------- CLOCK -------------------
+st.markdown(f"""
+<div style="font-size: 24px; font-weight: bold; text-transform: uppercase;">
+🕒 Current Date & Time (IST): {current_time_ist}
+</div>
+""", unsafe_allow_html=True)
+
+# ------------------- STYLING -------------------
 st.markdown("""
 <link href="https://fonts.googleapis.com/css2?family=Catamaran:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
@@ -28,7 +35,6 @@ st.markdown("""
     background-color: rgba(255, 255, 255, 0.88);
     padding: 2rem;
     border-radius: 10px;
-    font-family: 'Catamaran', sans-serif;
 }
 h1, h2, h3 {
     color: #0b3954 !important;
@@ -37,16 +43,45 @@ h1, h2, h3 {
 }
 [data-testid="stSidebar"] {
     background-color: rgba(255, 255, 255, 0.75);
-    font-family: 'Catamaran', sans-serif;
 }
 </style>
 """, unsafe_allow_html=True)
 
-# ------------------- Sidebar Navigation -------------------
+# ------------------- SIDEBAR NAV -------------------
 st.sidebar.title("🧨 Glacier Dashboard")
-page = st.sidebar.radio("Navigate", ["Overview", "Chart View", "Prediction", "Alerts", "Map Overview", "Chatbot"])
+page = st.sidebar.radio("Navigate", ["Overview", "Chart View", "Prediction", "Alerts", "Map Overview"])
 
-# ------------------- Data -------------------
+# ------------------- SIMPLE BUILT-IN CHATBOT -------------------
+with st.sidebar.expander("💬 Ask GlacierBot"):
+    st.markdown("I can answer glacier-related questions! Try:")
+    user_q = st.text_input("Your question:", placeholder="e.g. What is NDSI?")
+    
+    if user_q:
+        q = user_q.lower()
+        if "ndsi" in q:
+            st.write("🧊 NDSI stands for Normalized Difference Snow Index, used to detect snow and ice in satellite images.")
+        elif "gangotri" in q:
+            st.write("🗻 The Gangotri Glacier is one of the largest glaciers in the Himalayas and source of the Ganges.")
+        elif "retreat" in q:
+            st.write("📉 Glacier retreat refers to the shrinking of glaciers due to melting over time.")
+        elif "area" in q:
+            st.write("🗺 Area is calculated by detecting glacier pixels using NDSI threshold > 0.4.")
+        elif "elevation" in q:
+            st.write("📏 Mean elevation gives average height of the glacier zone, useful in melt analysis.")
+        elif "arima" in q:
+            st.write("📊 ARIMA is a time series forecasting model used for glacier area prediction.")
+        elif "regression" in q:
+            st.write("📉 Polynomial regression helps model glacier area trends over years.")
+        elif "satellite" in q or "landsat" in q:
+            st.write("🛰 This app uses Landsat 5, 7, and 8 imagery from Google Earth Engine.")
+        elif "climate" in q:
+            st.write("🌡 Climate change is a major reason for glacier melt globally.")
+        elif "threshold" in q or "alert" in q:
+            st.write("⚠️ Alerts are based on a critical glacier area threshold (e.g., < 20 sq.km).")
+        else:
+            st.write("🤖 I'm still learning. Ask me about NDSI, retreat, Landsat, ARIMA, etc.")
+
+# ------------------- LOAD DATA -------------------
 csv_url = 'https://raw.githubusercontent.com/Parkavi-29/glacier/main/Gangotri_Glacier_Area_NDSI_2001_2023.csv'
 try:
     df = pd.read_csv(csv_url)
@@ -57,11 +92,11 @@ except Exception as e:
     st.exception(e)
     df = None
 
-# ------------------- Pages -------------------
+# ------------------- PAGES -------------------
 if df is not None:
     if page == "Overview":
         st.title("📋 Glacier Melt Analysis (Gangotri)")
-        st.markdown("Analyzing Gangotri Glacier retreat from Landsat Data (NDSI-based, 2001–2023)")
+        st.markdown("Analyzing Gangotri Glacier retreat from Landsat Data (NDSI-based, 2001-2023)")
         st.dataframe(df, use_container_width=True)
 
     elif page == "Chart View":
@@ -72,6 +107,7 @@ if df is not None:
 
     elif page == "Prediction":
         st.title("🔮 Future Glacier Area Prediction")
+
         df_model = df.copy()
         X = df_model['year'].values.reshape(-1, 1)
         y = df_model['area_km2'].values.reshape(-1, 1)
@@ -80,16 +116,23 @@ if df is not None:
         poly = PolynomialFeatures(degree=2)
         X_poly = poly.fit_transform(X)
         model = LinearRegression().fit(X_poly, y)
+
         future_years = np.arange(2025, 2051, 5).reshape(-1, 1)
         future_poly = poly.transform(future_years)
         pred_poly = model.predict(future_poly)
 
-        pred_df = pd.DataFrame({'year': future_years.flatten(), 'area_km2': pred_poly.flatten(), 'type': 'Predicted'})
+        pred_df = pd.DataFrame({
+            'year': future_years.flatten(),
+            'area_km2': pred_poly.flatten(),
+            'type': 'Predicted'
+        })
         df_model['type'] = 'Observed'
         full_df = pd.concat([df_model[['year', 'area_km2', 'type']], pred_df])
+
         fig = px.line(full_df, x='year', y='area_km2', color='type', markers=True,
                       title="Glacier Area Forecast (Polynomial Regression)")
         st.plotly_chart(fig, use_container_width=True)
+
         for year, value in zip(future_years.flatten(), pred_poly.flatten()):
             st.metric(f"📈 Predicted Area ({year})", f"{value:.2f} sq.km")
 
@@ -100,11 +143,12 @@ if df is not None:
             forecast = model_fit.forecast(steps=10)
             future_years_arima = np.arange(df_model['year'].iloc[-1] + 1, df_model['year'].iloc[-1] + 11)
             arima_df = pd.DataFrame({'year': future_years_arima, 'area_km2': forecast, 'type': 'ARIMA Forecast'})
+
             all_df = pd.concat([df_model[['year', 'area_km2', 'type']], arima_df])
             fig_arima = px.line(all_df, x='year', y='area_km2', color='type', title="ARIMA Forecast - Glacier Area")
             st.plotly_chart(fig_arima, use_container_width=True)
         except Exception as e:
-            st.warning("⚠️ ARIMA forecast failed. Try changing the model parameters.")
+            st.warning("⚠️ ARIMA forecast failed. Consider adjusting parameters.")
 
     elif page == "Alerts":
         st.title("🚨 Glacier Risk Alerts")
@@ -121,41 +165,3 @@ if df is not None:
         st.title("🗺 Gangotri Glacier Map Overview")
         m = leafmap.Map(center=[30.96, 79.08], zoom=11)
         m.to_streamlit(height=600)
-
-    elif page == "Chatbot":
-        st.title("🤖 Glacier Assistant Chatbot")
-        st.markdown("Ask anything about glaciers. Try: *What is a glacier?*, *What is NDSI?*, etc.")
-
-        user_input = st.text_input("Ask your question:")
-        if user_input:
-            question = user_input.lower()
-
-            # Hardcoded answers
-            responses = {
-                "what is a glacier": "A glacier is a large mass of ice that forms over many years and flows slowly over land.",
-                "what is glacier retreat": "Glacier retreat refers to the shrinking of glacier size due to melting.",
-                "what is gangotri glacier": "Gangotri Glacier is one of the largest Himalayan glaciers and source of the Ganges.",
-                "what is ndsi": "NDSI stands for Normalized Difference Snow Index. It's used to identify snow and ice using satellite data.",
-                "what is landsat": "Landsat is a series of Earth-observing satellites jointly managed by NASA and USGS.",
-                "how is glacier area calculated": "We use satellite images (e.g. Landsat) and indices like NDSI to detect glacier area.",
-                "why is glacier melting": "Due to rising global temperatures and climate change.",
-                "what is polynomial regression": "A type of regression used to model curved relationships like glacier melting trends.",
-                "what is arima": "ARIMA is a time series forecasting technique used for predicting future values.",
-                "how can we save glaciers": "By reducing carbon emissions, using renewable energy, and conserving water and forests."
-            }
-
-            matched = False
-            for q, ans in responses.items():
-                if q in question:
-                    st.success(f"💬 {ans}")
-                    matched = True
-                    break
-
-            if not matched:
-                st.info("🤔 I'm still learning. Try simpler questions like 'What is a glacier?'")
-
-# Footer IST time
-st.markdown(f"""
-<hr>
-<p style='text-align:center;font-size:14px;'>🕒 Current IST Time: <strong>{current_time_ist}</strong></p>
-""", unsafe_allow_html=True)
