@@ -19,13 +19,22 @@ current_time_ist = datetime.now(ist).strftime('%Y-%m-%d %H:%M:%S').upper()
 st.set_page_config(layout="wide")
 
 # Clock at top
+# ------------------- #
+# Clock at top-left   #
+# ------------------- #
+
 st.markdown(f"""
-<div style="font-size: 24px; font-weight: bold; text-transform: uppercase;">
-🕒 Current Date & Time (IST): {current_time_ist}
-</div>
+    <div style="position: fixed; top: 15px; left: 20px; z-index: 9999; background-color: rgba(255, 255, 255, 0.7); 
+                padding: 10px 15px; border-radius: 8px; font-family: 'Courier New', monospace;">
+        <div style="font-size: 20px; font-weight: bold;">📅 {datetime.now(ist).strftime('%Y-%m-%d')}</div>
+        <div style="font-size: 18px;">🕒 {datetime.now(ist).strftime('%H:%M:%S')}</div>
+    </div>
 """, unsafe_allow_html=True)
 
-# Background + fonts
+# ------------------- #
+# Background + Fonts  #
+# ------------------- #
+
 st.markdown("""
 <style>
 [data-testid="stAppViewContainer"] {
@@ -37,15 +46,22 @@ st.markdown("""
     background-color: rgba(255, 255, 255, 0.88);
     padding: 2rem;
     border-radius: 10px;
+    font-family: 'Segoe UI', sans-serif;
 }
 h1, h2, h3 {
     color: #0b3954 !important;
+    font-family: 'Trebuchet MS', sans-serif;
+}
+body, .stTextInput, .stSelectbox {
+    font-family: 'Segoe UI', sans-serif;
 }
 [data-testid="stSidebar"] {
     background-color: rgba(255, 255, 255, 0.75);
+    font-family: 'Segoe UI', sans-serif;
 }
 </style>
 """, unsafe_allow_html=True)
+
 
 # -------------------
 # Sidebar navigation
