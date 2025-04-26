@@ -29,7 +29,7 @@ st.markdown(f"""
 st.markdown("""
 <style>
 [data-testid="stAppViewContainer"] {
-    background-image: url("https://w0.peakpx.com/wallpaper/262/173/HD-wallpaper-samsung-background-blue-edge-gradient-gray-plain-purple-simple-sky-thumbnail.jpg");
+    background-image: url("https://htmlcolorcodes.com/assets/images/html-color-codes-color-tutorials-thumb.jpg");
     background-size: cover;
     background-attachment: fixed;
 }
