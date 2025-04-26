@@ -29,7 +29,7 @@ st.markdown(f"""
 st.markdown("""
 <style>
 [data-testid="stAppViewContainer"] {
-    background-image: url("https://static.vecteezy.com/system/resources/previews/008/133/021/non_2x/panoramic-abstract-web-background-light-multicolored-gradient-vector.jpg");
+    background-image: url("https://wallpapercave.com/wp/wp6565520.jpg");
     background-size: cover;
     background-attachment: fixed;
 }
