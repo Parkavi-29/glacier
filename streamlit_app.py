@@ -78,7 +78,6 @@ with col2:
 # ------------------- IMAGE COLUMN -------------------
 with col3:
     st.header("🏔 Gangotri Glacier Views")
-    st.image("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcREy-RSzTOCMqJTuRwLLiwr7UpAAGv6Hpv6xQ&s", use_container_width=True)
     st.image("https://www.remotelands.com/travelogues/app/uploads/2018/06/DSC00976-2.jpg", use_container_width=True)
     st.image("https://akm-img-a-in.tosshub.com/aajtak/images/story/202209/gaumukh_gangotri_glacier_getty_1-sixteen_nine.jpg?size=948:533", use_container_width=True)
 
