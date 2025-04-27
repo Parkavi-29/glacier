@@ -26,7 +26,7 @@ st.markdown("""
 <link href="https://fonts.googleapis.com/css2?family=Catamaran:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 [data-testid="stAppViewContainer"] {
-    background-image: url("https://img.freepik.com/premium-vector/abstract-color-background-website-banner-poster-card-modern-graphic-design-decoration_120819-934.jpg");
+    background-image: url("https://img.freepik.com/premium-vector/blue-mountain-landscape-with-blue-mountain-range-background_530386-237.jpg");
     background-size: cover;
     background-attachment: fixed;
     font-family: 'Catamaran', sans-serif;
