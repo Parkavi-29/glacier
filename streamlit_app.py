@@ -1,5 +1,3 @@
-# 🚀 FINAL PRO VERSION - 3 COLUMNS LAYOUT
-
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -12,55 +10,39 @@ from datetime import datetime
 import pytz
 
 # ------------------- SETUP -------------------
-ist = pytz.timezone('Asia/Kolkata')
-now = datetime.now(ist)
-current_time = now.strftime('%-I:%M')
-current_date = now.strftime('%a, %d %B')
-
 st.set_page_config(layout="wide")
 
-# ------------------- CLOCK -------------------
-st.markdown(f"""
-<div style="text-align: center; color: white; padding: 10px; font-family: 'Catamaran', sans-serif;">
-    <div style="font-size: 70px; font-weight: bold;">{current_time}</div>
-    <div style="font-size: 30px;">{current_date}</div>
-</div>
-""", unsafe_allow_html=True)
+# ------------------- CLOCK (PRO STYLE) -------------------
+ist = pytz.timezone('Asia/Kolkata')
+now = datetime.now(ist)
+
+current_time = now.strftime('%I:%M %p')  # 04:26 PM
+current_date = now.strftime('%A, %d %B %Y')  # Saturday, 27 April 2025
+
+# ------------------- SIDEBAR NAV -------------------
+st.sidebar.title("🧨 Glacier Dashboard")
+page = st.sidebar.radio("Navigate", ["Overview", "Chart View", "Prediction", "Alerts", "Map Overview"])
 
 # ------------------- STYLING -------------------
 st.markdown("""
-<link href="https://fonts.googleapis.com/css2?family=Catamaran:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 [data-testid="stAppViewContainer"] {
-    background-color: #f0f2f6;
-    background-attachment: fixed;
-    font-family: 'Catamaran', sans-serif;
-}
-.main {
-    background-color: rgba(255, 255, 255, 0.9);
-    padding: 2rem;
-    border-radius: 10px;
-}
-h1, h2, h3 {
-    color: #0b3954 !important;
-    font-family: 'Catamaran', sans-serif;
-    font-weight: 700;
+    background-color: #F5F7FA;
+    font-family: 'Poppins', sans-serif;
 }
 [data-testid="stSidebar"] {
-    background-color: rgba(255, 255, 255, 0.85);
+    background-color: #ffffff;
 }
 </style>
 """, unsafe_allow_html=True)
 
-# ------------------- SIDEBAR NAV -------------------
-st.sidebar.title("🌨 Glacier Dashboard")
-page = st.sidebar.radio("Navigate", ["Overview", "Chart View", "Prediction", "Alerts", "Map Overview"])
+# ------------------- MAIN 3 COLUMN LAYOUT -------------------
+col1, col2, col3 = st.columns([2, 1.2, 1.5])
 
-# ------------------- LAYOUT: 3 COLUMNS -------------------
-col_main, col_gallery, col_chatbot = st.columns([3, 1.5, 1.5])
-
-# ------------------- MAIN CONTENT -------------------
-with col_main:
+# --------- COLUMN 1 (Main Pages) ---------
+with col1:
+    # ------------------- LOAD DATA -------------------
     csv_url = 'https://raw.githubusercontent.com/Parkavi-29/glacier/main/Gangotri_Glacier_Area_NDSI_2001_2023.csv'
     try:
         df = pd.read_csv(csv_url)
@@ -85,6 +67,7 @@ with col_main:
 
         elif page == "Prediction":
             st.title("🔮 Future Glacier Area Prediction")
+
             df_model = df.copy()
             X = df_model['year'].values.reshape(-1, 1)
             y = df_model['area_km2'].values.reshape(-1, 1)
@@ -93,6 +76,7 @@ with col_main:
             poly = PolynomialFeatures(degree=2)
             X_poly = poly.fit_transform(X)
             model = LinearRegression().fit(X_poly, y)
+
             future_years = np.arange(2025, 2051, 5).reshape(-1, 1)
             future_poly = poly.transform(future_years)
             pred_poly = model.predict(future_poly)
@@ -108,22 +92,6 @@ with col_main:
             fig = px.line(full_df, x='year', y='area_km2', color='type', markers=True,
                           title="Glacier Area Forecast (Polynomial Regression)")
             st.plotly_chart(fig, use_container_width=True)
-
-            for year, value in zip(future_years.flatten(), pred_poly.flatten()):
-                st.metric(f"📈 Predicted Area ({year})", f"{value:.2f} sq.km")
-
-            st.subheader("📊 ARIMA Time Series Forecast (next 10 years)")
-            try:
-                model_arima = ARIMA(df_model['area_km2'], order=(1, 1, 1))
-                model_fit = model_arima.fit()
-                forecast = model_fit.forecast(steps=10)
-                future_years_arima = np.arange(df_model['year'].iloc[-1] + 1, df_model['year'].iloc[-1] + 11)
-                arima_df = pd.DataFrame({'year': future_years_arima, 'area_km2': forecast, 'type': 'ARIMA Forecast'})
-                all_df = pd.concat([df_model[['year', 'area_km2', 'type']], arima_df])
-                fig_arima = px.line(all_df, x='year', y='area_km2', color='type', title="ARIMA Forecast - Glacier Area")
-                st.plotly_chart(fig_arima, use_container_width=True)
-            except Exception as e:
-                st.warning("⚠️ ARIMA forecast failed. Consider adjusting parameters.")
 
         elif page == "Alerts":
             st.title("🚨 Glacier Risk Alerts")
@@ -141,28 +109,47 @@ with col_main:
             m = leafmap.Map(center=[30.96, 79.08], zoom=11)
             m.to_streamlit(height=600)
 
-# ------------------- GALLERY -------------------
-with col_gallery:
-    st.header("🖼 Gangotri Glacier Views")
-    st.image("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcREy-RSzTOCMqJTuRwLLiwr7UpAAGv6Hpv6xQ&s", caption="Gangotri Glacier View 1")
-    st.image("https://www.remotelands.com/travelogues/app/uploads/2018/06/DSC00976-2.jpg", caption="Gangotri Glacier View 2")
-    st.image("https://akm-img-a-in.tosshub.com/aajtak/images/story/202209/gaumukh_gangotri_glacier_getty_1-sixteen_nine.jpg?size=948:533", caption="Gangotri Glacier View 3")
+# --------- COLUMN 2 (Gangotri Images) ---------
+with col2:
+    st.image("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcREy-RSzTOCMqJTuRwLLiwr7UpAAGv6Hpv6xQ&s", caption="Gangotri Glacier View 1", use_column_width=True)
+    st.image("https://www.remotelands.com/travelogues/app/uploads/2018/06/DSC00976-2.jpg", caption="Gangotri Glacier View 2", use_column_width=True)
+    st.image("https://akm-img-a-in.tosshub.com/aajtak/images/story/202209/gaumukh_gangotri_glacier_getty_1-sixteen_nine.jpg?size=948:533", caption="Gaumukh Source", use_column_width=True)
 
-# ------------------- CHATBOT -------------------
-with col_chatbot:
-    st.header("💬 Ask GlacierBot")
-    user_q = st.text_area("Type your glacier question:", height=150, placeholder="e.g. What causes glacier melting?")
-    if user_q:
-        q = user_q.lower()
-        if "ndsi" in q:
-            st.success("🧊 NDSI is used to detect snow and ice based on green and SWIR bands.")
-        elif "gangotri" in q:
-            st.success("🗻 Gangotri Glacier is a primary source of the Ganges river.")
-        elif "melting" in q or "retreat" in q:
-            st.success("📉 Glacier melting is mainly due to rising temperatures and climate change.")
-        elif "landsat" in q:
-            st.success("🛰 Landsat 5, 7, and 8 images were used to analyze glacier retreat from 2001 to 2023.")
-        else:
-            st.info("🤖 Sorry, I know about NDSI, Gangotri, melting, Landsat. More topics soon!")
+# --------- COLUMN 3 (Date/Time and Chatbot) ---------
+with col3:
+    # --------- CLOCK ---------
+    st.markdown(f"""
+    <div style="text-align: center; padding: 20px 0;">
+        <div style="font-size: 60px; font-weight: bold; 
+                    background: linear-gradient(90deg, #1E90FF, #8A2BE2);
+                    -webkit-background-clip: text;
+                    color: transparent;
+                    font-family: 'Poppins', sans-serif;">
+            {current_time}
+        </div>
+        <div style="font-size: 24px; color: #666666; font-family: 'Poppins', sans-serif;">
+            {current_date}
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
-# 🚀 DONE! FINAL PRO 3-COLUMN VERSION!
+    # --------- CHATBOT ---------
+    with st.expander("💬 Ask GlacierBot", expanded=True):
+        user_q = st.text_input("Your question:", placeholder="e.g. What is NDSI?", key="chat")
+
+        if user_q:
+            q = user_q.lower()
+            if "ndsi" in q:
+                st.success("🧊 NDSI stands for Normalized Difference Snow Index, used to detect snow and ice in satellite images.")
+            elif "gangotri" in q:
+                st.success("🗻 The Gangotri Glacier is one of the largest glaciers in the Himalayas and source of the Ganges.")
+            elif "retreat" in q:
+                st.success("📉 Glacier retreat refers to the shrinking of glaciers due to melting over time.")
+            elif "area" in q:
+                st.success("🗺 Area is calculated by detecting glacier pixels using NDSI threshold > 0.4.")
+            elif "arima" in q:
+                st.success("📊 ARIMA is a time series forecasting model used for glacier area prediction.")
+            elif "regression" in q:
+                st.success("📉 Polynomial regression helps model glacier area trends over years.")
+            else:
+                st.info("🤖 I'm still learning. Try asking about glaciers, ARIMA, NDSI, etc.")
