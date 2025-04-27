@@ -13,11 +13,17 @@ import pytz
 ist = pytz.timezone('Asia/Kolkata')
 current_time_ist = datetime.now(ist).strftime('%Y-%m-%d %H:%M:%S').upper()
 st.set_page_config(layout="wide")
-
 # ------------------- CLOCK -------------------
+ist = pytz.timezone('Asia/Kolkata')
+now = datetime.now(ist)
+
+current_time = now.strftime('%-I:%M')  # like 1:51
+current_date = now.strftime('%a, %d %B')  # like Sun, 27 April
+
 st.markdown(f"""
-<div style="font-size: 24px; font-weight: bold; text-transform: uppercase;">
-🕒 Current Date & Time (IST): {current_time_ist}
+<div style="text-align: center; color: white; padding: 10px; font-family: 'Catamaran', sans-serif;">
+    <div style="font-size: 70px; font-weight: bold;">{current_time}</div>
+    <div style="font-size: 30px;">{current_date}</div>
 </div>
 """, unsafe_allow_html=True)
 
