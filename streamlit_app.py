@@ -26,7 +26,7 @@ st.markdown("""
 <link href="https://fonts.googleapis.com/css2?family=Catamaran:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 [data-testid="stAppViewContainer"] {
-    background-image: url("https://digitalsynopsis.com/wp-content/uploads/2017/07/beautiful-color-ui-gradients-backgrounds-purple-love.png");
+    background-image: url("https://www.hunterlab.com/media/images/light-yellow-background.max-2560x789.jpg.pagespeed.ce.epOGMRWGhe.jpg");
     background-size: cover;
     background-attachment: fixed;
     font-family: 'Catamaran', sans-serif;
