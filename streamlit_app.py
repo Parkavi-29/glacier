@@ -16,26 +16,35 @@ st.set_page_config(layout="wide")
 
 # ------------------- CLOCK -------------------
 st.markdown(f"""
-<div style="font-size: 24px; font-weight: bold; text-transform: uppercase;">
-🕒 Current Date & Time (IST): {current_time_ist}
+<div style="text-align: center; font-family: 'Catamaran', sans-serif; padding: 10px;">
+    <div style="font-size: 36px; font-weight: bold; color: #0b3954;">Current Date & Time (IST)</div>
+    <div style="font-size: 26px; color: #333;">{current_time_ist}</div>
 </div>
 """, unsafe_allow_html=True)
 # ------------------- AOI SUMMARY -------------------
 st.markdown("""
-### 📍 Area of Interest (AOI) Summary
-- **🧊 Total Glacier Area:** ~64.13 sq.km
-- **📌 Bounding Box:**
-  - **Longitude:** 79.03°E → 79.10°E (~7.7 km)
-  - **Latitude:** 30.94°N → 31.02°N (~8.9 km)
-- **🗺 Major Places Covered:**
-  - Gangotri Glacier  
-  - Gaumukh Snout  
-  - Chirbasa  
-  - Bhojbasa  
-  - Tapovan (partial)  
-  - Gangotri National Park
-""")
-
+<div style="border: 2px solid #0b3954; padding: 20px; border-radius: 10px; background-color: rgba(255, 255, 255, 0.93); font-family: 'Catamaran', sans-serif;">
+    <h3 style="color: #0b3954;">📍 Area of Interest (AOI) Summary</h3>
+    <ul style="line-height: 1.7; font-size: 16px;">
+        <li><b>Total Glacier Area:</b> ~64.13 sq.km</li>
+        <li><b>Bounding Box:</b>
+            <ul>
+                <li>Longitude: 79.03°E → 79.10°E (~7.7 km)</li>
+                <li>Latitude: 30.94°N → 31.02°N (~8.9 km)</li>
+            </ul>
+        </li>
+        <li><b>Major Places Covered:</b>
+            <ul>
+                <li>Gangotri Glacier</li>
+                <li>Gaumukh Snout</li>
+                <li>Chirbasa & Bhojbasa</li>
+                <li>Tapovan (partial)</li>
+                <li>Gangotri National Park</li>
+            </ul>
+        </li>
+    </ul>
+</div>
+""", unsafe_allow_html=True)
 
 # ------------------- STYLING -------------------
 st.markdown("""
