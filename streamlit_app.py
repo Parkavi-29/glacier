@@ -21,6 +21,22 @@ current_time = now.strftime('%I:%M %p')
 current_date = now.strftime('%d %B %Y')
 
 st.set_page_config(layout="wide")
+# ------------------- AOI SUMMARY -------------------
+with st.container():
+    st.markdown("""
+    ### 📍 Area of Interest (AOI) Summary
+    - **Total Glacier Coverage:** ~64.13 sq.km
+    - **Longitude Range:** 79.03°E → 79.10°E (~7.7 km)
+    - **Latitude Range:** 30.94°N → 31.02°N (~8.9 km)
+    
+    #### 🗺 Areas Covered:
+    - **🧊 Gangotri Glacier** (Primary AOI)
+    - **🌊 Gaumukh Snout** (Glacier terminus and water source)
+    - **🏕 Chirbasa & Bhojbasa** (Popular trekking zones)
+    - **🌄 Tapovan Valley (partial)** (High-altitude glacial basin)
+    - **🌿 Gangotri National Park** (Protected Himalayan zone)
+    """)
+
 
 # ------------------- STYLING -------------------
 st.markdown("""
