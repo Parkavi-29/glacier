@@ -88,6 +88,21 @@ with col3:
 
 # ------------------- MAIN CONTENT -------------------
 with col1:
+    # ------------------- AOI DETAILS -------------------
+    with st.expander("📍 Area of Interest (AOI) Info"):
+        st.markdown("""
+        - **🗺 Total Area Covered:** ~64.13 sq.km  
+        - **🔁 Dimensions:**  
+          • Longitude: 79.03°E to 79.10°E (~7.7 km)  
+          • Latitude: 30.94°N to 31.02°N (~8.9 km)  
+        - **📌 Places Included:**  
+          - Gangotri Glacier (main glacier body)  
+          - Gaumukh Snout (glacier terminus)  
+          - Chirbasa & Bhojbasa (popular trek points)  
+          - Partial Tapovan Valley  
+          - Region inside **Gangotri National Park**
+        """)
+
     # ------------------- LOAD DATA -------------------
     csv_url = 'https://raw.githubusercontent.com/Parkavi-29/glacier/main/Gangotri_Glacier_Area_NDSI_2001_2023.csv'
     try:
@@ -99,26 +114,20 @@ with col1:
         st.exception(e)
         df = None
 
-    # ------------------- PAGES -------------------
     if df is not None:
-
-        # Custom Year Range Selector
-        year_range = st.slider('Select Year Range:', 2001, 2023, (2001, 2023))
-        df_filtered = df[(df['year'] >= year_range[0]) & (df['year'] <= year_range[1])]
-
         if page == "Overview":
             st.title("📋 Glacier Melt Analysis")
-            st.dataframe(df_filtered, use_container_width=True)
-            st.download_button("⬇️ Download Data", df_filtered.to_csv(index=False), "gangotri_glacier_filtered.csv", "text/csv")
+            st.dataframe(df, use_container_width=True)
+            st.download_button("⬇️ Download Data", df.to_csv(index=False), "gangotri_glacier.csv", "text/csv")
 
         elif page == "Chart View":
             st.title("📈 Glacier Retreat Trends")
-            fig = px.line(df_filtered, x='year', y='area_km2', markers=True, title="Observed Retreat")
+            fig = px.line(df, x='year', y='area_km2', markers=True, title="Observed Retreat (2001–2023)")
             st.plotly_chart(fig, use_container_width=True)
 
         elif page == "Prediction":
             st.title("🔮 Glacier Area Forecast")
-            df_model = df_filtered.copy()
+            df_model = df.copy()
             X = df_model['year'].values.reshape(-1, 1)
             y = df_model['area_km2'].values.reshape(-1, 1)
 
@@ -156,7 +165,7 @@ with col1:
 
         elif page == "Alerts":
             st.title("🚨 Glacier Risk Alerts")
-            latest_area = df_filtered['area_km2'].iloc[-1]
+            latest_area = df['area_km2'].iloc[-1]
             threshold = st.slider("Set Alert Threshold (sq.km)", 5, 30, 20)
             if latest_area < threshold:
                 st.error(f"🔴 Critical: Area critically low! ({latest_area:.2f} sq.km)")
@@ -169,5 +178,3 @@ with col1:
             st.title("🗺 Map Overview")
             m = leafmap.Map(center=[30.96, 79.08], zoom=11)
             m.to_streamlit(height=600)
-
-# END OF FILE ✅
