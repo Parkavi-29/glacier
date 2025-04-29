@@ -23,7 +23,7 @@ st.markdown("""
 <link href="https://fonts.googleapis.com/css2?family=Catamaran:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 [data-testid="stAppViewContainer"] {
-    background: url('https://wallpapers.com/images/hd/light-color-background-ktlguo4sk6owzjuh.jpg');
+    background: url('https://images.pexels.com/photos/281260/pexels-photo-281260.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500');
     background-size: cover;
     background-position: center;
     font-family: 'Catamaran', sans-serif;
