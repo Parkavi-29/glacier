@@ -20,6 +20,22 @@ st.markdown(f"""
 🕒 Current Date & Time (IST): {current_time_ist}
 </div>
 """, unsafe_allow_html=True)
+# ------------------- AOI SUMMARY -------------------
+st.markdown("""
+### 📍 Area of Interest (AOI) Summary
+- **🧊 Total Glacier Area:** ~64.13 sq.km
+- **📌 Bounding Box:**
+  - **Longitude:** 79.03°E → 79.10°E (~7.7 km)
+  - **Latitude:** 30.94°N → 31.02°N (~8.9 km)
+- **🗺 Major Places Covered:**
+  - Gangotri Glacier  
+  - Gaumukh Snout  
+  - Chirbasa  
+  - Bhojbasa  
+  - Tapovan (partial)  
+  - Gangotri National Park
+""")
+
 
 # ------------------- STYLING -------------------
 st.markdown("""
