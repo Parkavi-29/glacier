@@ -27,7 +27,7 @@ st.markdown("""
 <link href="https://fonts.googleapis.com/css2?family=Catamaran:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 [data-testid="stAppViewContainer"] {
-    background-image: url("https://www.robinage.com/wp-content/uploads/2022/10/gangotri-.jpg");
+    background-image: url("https://img.freepik.com/free-vector/blue-watercolor-mountains-background_23-2149250282.jpg?semt=ais_hybrid&w=740");
     background-size: cover;
     background-attachment: fixed;
     font-family: 'Catamaran', sans-serif;
