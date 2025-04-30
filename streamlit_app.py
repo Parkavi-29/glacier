@@ -28,7 +28,6 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-
 # ------------------- STYLING -------------------
 st.markdown("""
 <link href="https://fonts.googleapis.com/css2?family=Catamaran:wght@400;600;700&display=swap" rel="stylesheet">
@@ -41,6 +40,11 @@ st.markdown("""
     background-repeat: no-repeat;
     font-family: 'Catamaran', sans-serif;
 }
+section.main {
+    background-color: rgba(255, 255, 255, 0.3);  /* Light background to improve readability */
+    padding: 1.5rem;
+    border-radius: 10px;
+}
 h1, h2, h3 {
     color: #0b3954 !important;
     font-weight: 700;
@@ -50,6 +54,7 @@ h1, h2, h3 {
 }
 </style>
 """, unsafe_allow_html=True)
+
 
 # ------------------- SIDEBAR -------------------
 st.sidebar.title("🧨 Glacier Dashboard")
