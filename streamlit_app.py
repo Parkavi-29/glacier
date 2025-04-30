@@ -21,6 +21,12 @@ st.markdown(f"""
     <div style="font-size: 26px; color: #333;">{current_time_ist}</div>
 </div>
 """, unsafe_allow_html=True)
+# ------------------- APP TITLE -------------------
+st.markdown("""
+<h1 style='text-align: center; color: #0b3954; font-family: Catamaran; font-size: 44px; padding-top: 10px;'>
+    Glacier Melt Analysis and Prediction App
+</h1>
+""", unsafe_allow_html=True)
 
 # ------------------- STYLING -------------------
 st.markdown("""
