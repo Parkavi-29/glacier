@@ -27,9 +27,10 @@ st.markdown("""
 <link href="https://fonts.googleapis.com/css2?family=Catamaran:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 [data-testid="stAppViewContainer"] {
-    background-image: url("https://img.freepik.com/free-vector/blue-watercolor-mountains-background_23-2149250282.jpg?semt=ais_hybrid&w=740");
+    background-image: url("https://img.freepik.com/free-vector/blue-watercolor-mountains-background_23-2149250282.jpg");
     background-size: cover;
     background-attachment: fixed;
+    background-repeat: no-repeat;
     font-family: 'Catamaran', sans-serif;
 }
 h1, h2, h3 {
@@ -75,15 +76,16 @@ except Exception as e:
     st.exception(e)
     df = None
 
-# ------------------- PAGES -------------------
+# ------------------- GLOBAL TIME SLIDER -------------------
 if df is not None:
-
-    # Year slider shown in all pages
     year_min, year_max = int(df['year'].min()), int(df['year'].max())
     year_range = st.slider("📆 Select year range:", year_min, year_max, (year_min, year_max), step=1)
     df_filtered = df[(df['year'] >= year_range[0]) & (df['year'] <= year_range[1])]
 
+# ------------------- PAGE LOGIC -------------------
+if df is not None:
     if page == "Overview":
+        # AOI summary in overview page
         st.markdown("""
         <div style="border: 2px solid #0b3954; padding: 20px; border-radius: 10px; background-color: rgba(255, 255, 255, 0.95); font-family: 'Catamaran', sans-serif;">
             <h3 style="color: #0b3954;">📍 Area of Interest (AOI) Summary</h3>
@@ -120,7 +122,6 @@ if df is not None:
 
     elif page == "Prediction":
         st.title("🔮 Glacier Area Forecast")
-
         df_model = df_filtered.copy()
         X = df_model['year'].values.reshape(-1, 1)
         y = df_model['area_km2'].values.reshape(-1, 1)
@@ -134,16 +135,11 @@ if df is not None:
         future_poly = poly.transform(future_years)
         pred_poly = model.predict(future_poly)
 
-        pred_df = pd.DataFrame({
-            'year': future_years.flatten(),
-            'area_km2': pred_poly.flatten(),
-            'type': 'Predicted'
-        })
+        pred_df = pd.DataFrame({'year': future_years.flatten(), 'area_km2': pred_poly.flatten(), 'type': 'Predicted'})
         df_model['type'] = 'Observed'
         full_df = pd.concat([df_model[['year', 'area_km2', 'type']], pred_df])
 
-        fig_poly = px.line(full_df, x='year', y='area_km2', color='type', markers=True,
-                           title="Polynomial Forecast")
+        fig_poly = px.line(full_df, x='year', y='area_km2', color='type', markers=True, title="Polynomial Forecast")
         st.plotly_chart(fig_poly, use_container_width=True)
 
         for year, value in zip(future_years.flatten(), pred_poly.flatten()):
