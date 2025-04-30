@@ -35,6 +35,7 @@ st.markdown("""
 <style>
 [data-testid="stAppViewContainer"] {
     background-image: url("https://img.freepik.com/free-vector/blue-watercolor-mountains-background_23-2149250282.jpg");
+    background-color: transparent;
     background-size: cover;
     background-attachment: fixed;
     background-repeat: no-repeat;
