@@ -13,20 +13,21 @@ import pytz
 ist = pytz.timezone('Asia/Kolkata')
 current_time_ist = datetime.now(ist).strftime('%Y-%m-%d %H:%M:%S').upper()
 st.set_page_config(layout="wide")
+# ------------------- APP TITLE -------------------
+st.markdown("""
+<h1 style='text-align: center; color: #0b3954; font-family: Catamaran; font-size: 46px; margin-bottom: 0;'>
+    🌨 Glacier Melt Analysis and Prediction App
+</h1>
+""", unsafe_allow_html=True)
 
 # ------------------- CLOCK -------------------
 st.markdown(f"""
-<div style="text-align: center; font-family: 'Catamaran', sans-serif; padding: 10px;">
-    <div style="font-size: 36px; font-weight: bold; color: #0b3954;">Current Date & Time (IST)</div>
-    <div style="font-size: 26px; color: #333;">{current_time_ist}</div>
+<div style="text-align: center; font-family: 'Catamaran', sans-serif; margin-top: -10px; padding-bottom: 20px;">
+    <div style="font-size: 30px; font-weight: bold; color: #0b3954;">Current Date & Time (IST)</div>
+    <div style="font-size: 24px; color: #333;">{current_time_ist}</div>
 </div>
 """, unsafe_allow_html=True)
-# ------------------- APP TITLE -------------------
-st.markdown("""
-<h1 style='text-align: center; color: #0b3954; font-family: Catamaran; font-size: 44px; padding-top: 10px;'>
-    Glacier Melt Analysis and Prediction App
-</h1>
-""", unsafe_allow_html=True)
+
 
 # ------------------- STYLING -------------------
 st.markdown("""
