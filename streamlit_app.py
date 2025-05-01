@@ -13,35 +13,54 @@ import pytz
 ist = pytz.timezone('Asia/Kolkata')
 current_time_ist = datetime.now(ist).strftime('%Y-%m-%d %H:%M:%S').upper()
 st.set_page_config(layout="wide")
-# ------------------- APP TITLE -------------------
+
+# ------------------- MODERN HERO SECTION -------------------
 st.markdown("""
-<h1 style='text-align: center; color: #0b3954; font-family: Catamaran; font-size: 46px; margin-bottom: 0;'>
-    🏔️ Glacier Melt Analysis and Predictions 
-</h1>
+<style>
+.hero {
+    background: linear-gradient(to right, #f7f9fc, #e3f2fd);
+    padding: 2rem;
+    text-align: center;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+.hero h1 {
+    font-size: 3rem;
+    color: #0b3954;
+    font-family: 'Catamaran', sans-serif;
+    margin: 0;
+}
+.hero p {
+    font-size: 1.2rem;
+    color: #444;
+    font-family: 'Catamaran', sans-serif;
+    margin-top: 0.5rem;
+}
+</style>
+<div class="hero">
+    <h1>🏔️ Glacier Melt Analysis & Prediction App</h1>
+    <p>Tracking Gangotri Glacier Retreat Using Satellite Data & Machine Learning</p>
+</div>
 """, unsafe_allow_html=True)
 
 # ------------------- CLOCK -------------------
 st.markdown(f"""
-<div style="text-align: center; font-family: 'Catamaran', sans-serif; margin-top: -10px; padding-bottom: 20px;">
-    <div style="font-size: 30px; font-weight: bold; color: #0b3954;"></div>
-    <div style="font-size: 24px; color: #333;">{current_time_ist}</div>
+<div style="text-align: center; font-family: 'Catamaran', sans-serif; padding-bottom: 15px;">
+    <div style="font-size: 20px; color: #0b3954;"><b>Current IST:</b> {current_time_ist}</div>
 </div>
 """, unsafe_allow_html=True)
 
-# ------------------- STYLING -------------------
+# ------------------- GLOBAL STYLING -------------------
 st.markdown("""
 <link href="https://fonts.googleapis.com/css2?family=Catamaran:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 [data-testid="stAppViewContainer"] {
-    background-image: url("https://i.pinimg.com/736x/bf/05/8f/bf058f329a00bd070962533e91f34d30.jpg");
-    background-color: transparent;
-    background-size: cover;
-    background-attachment: fixed;
-    background-repeat: no-repeat;
+    background-color: #f8f9fa;
     font-family: 'Catamaran', sans-serif;
 }
 section.main {
-    background-color: rgba(255, 255, 255, 0.3);  /* Light background to improve readability */
+    background-color: rgba(255, 255, 255, 0.95);
     padding: 1.5rem;
     border-radius: 10px;
 }
@@ -50,17 +69,16 @@ h1, h2, h3 {
     font-weight: 700;
 }
 [data-testid="stSidebar"] {
-    background-color: rgba(255, 255, 255, 0.85);
+    background-color: rgba(255, 255, 255, 0.9);
 }
 </style>
 """, unsafe_allow_html=True)
 
-
-# ------------------- SIDEBAR -------------------
-st.sidebar.title("🧨 Glacier Dashboard")
+# ------------------- SIDEBAR NAV -------------------
+st.sidebar.title("📊 Glacier Dashboard")
 page = st.sidebar.radio("Navigate", ["Overview", "Chart View", "Prediction", "Alerts", "Map Overview"])
 
-# ------------------- BUILT-IN CHATBOT -------------------
+# ------------------- SIDEBAR CHATBOT -------------------
 with st.sidebar.expander("💬 Ask GlacierBot"):
     user_q = st.text_input("Your question:", placeholder="e.g. What is NDSI?")
     if user_q:
@@ -98,9 +116,8 @@ if df is not None:
 # ------------------- PAGE LOGIC -------------------
 if df is not None:
     if page == "Overview":
-        # AOI summary in overview page
         st.markdown("""
-        <div style="border: 2px solid #0b3954; padding: 20px; border-radius: 10px; background-color: rgba(255, 255, 255, 0.95); font-family: 'Catamaran', sans-serif;">
+        <div style="border: 2px solid #0b3954; padding: 20px; border-radius: 10px; background-color: #ffffff;">
             <h3 style="color: #0b3954;">📍 Area of Interest (AOI) Summary</h3>
             <ul style="line-height: 1.7; font-size: 16px;">
                 <li><b>Total Glacier Area:</b> ~64.13 sq.km</li>
