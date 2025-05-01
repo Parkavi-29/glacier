@@ -16,7 +16,7 @@ st.set_page_config(layout="wide")
 # ------------------- APP TITLE -------------------
 st.markdown("""
 <h1 style='text-align: center; color: #0b3954; font-family: Catamaran; font-size: 46px; margin-bottom: 0;'>
-    🌨 Glacier Melt Analysis and Prediction 
+    🌨 Glacier Melt Analysis and Predictions 
 </h1>
 """, unsafe_allow_html=True)
 
@@ -33,7 +33,7 @@ st.markdown("""
 <link href="https://fonts.googleapis.com/css2?family=Catamaran:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 [data-testid="stAppViewContainer"] {
-    background-image: url("https://images.pexels.com/photos/6985136/pexels-photo-6985136.jpeg?cs=srgb&dl=pexels-codioful-6985136.jpg&fm=jpg");
+    background-image: url("https://i.pinimg.com/736x/c5/6b/7b/c56b7be8227e98bb515f56f68a396676.jpg");
     background-color: transparent;
     background-size: cover;
     background-attachment: fixed;
