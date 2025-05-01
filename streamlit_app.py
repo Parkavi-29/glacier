@@ -12,9 +12,9 @@ import pytz
 # ------------------- SETUP -------------------
 ist = pytz.timezone('Asia/Kolkata')
 current_time_ist = datetime.now(ist).strftime('%Y-%m-%d %H:%M:%S').upper()
-st.set_page_config(layout="wide")
+st.set_page_config(layout="wide", page_title="Glacier Melt Dashboard")
 
-# ------------------- GLOBAL STYLING -------------------
+# ------------------- STYLING -------------------
 st.markdown("""
 <link href="https://fonts.googleapis.com/css2?family=Catamaran:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
@@ -26,9 +26,9 @@ st.markdown("""
     font-family: 'Catamaran', sans-serif;
 }
 section.main {
-    background-color: rgba(255, 255, 255, 0.4);
-    padding: 1.5rem;
-    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 1rem;
+    border-radius: 8px;
 }
 h1, h2, h3 {
     color: #0b3954 !important;
@@ -40,18 +40,19 @@ h1, h2, h3 {
 </style>
 """, unsafe_allow_html=True)
 
-# ------------------- HEADER -------------------
+# ------------------- SIDEBAR -------------------
+st.sidebar.title("🧊 Glacier Dashboard")
+page = st.sidebar.radio("Navigate", ["Overview", "Chart View", "Prediction", "Alerts", "Map Overview"])
+
+# ------------------- TITLE -------------------
 st.markdown(f"""
-<div style='text-align: center; font-family: Catamaran; margin-top: -20px; margin-bottom: 10px;'>
-    <h1 style='font-size: 44px; color: #0b3954;'>🧨 Glacier Dashboard</h1>
-    <h2 style='font-size: 36px; font-weight: 700; color: #0b3954;'>🏔️ Glacier Melt Analysis and Predictions</h2>
-    <div style="font-size: 22px; color: #333;">{current_time_ist}</div>
+<h1 style='text-align: center; color: #0b3954; font-family: Catamaran; font-size: 44px; margin-bottom: -5px;'>
+    🏔️ Glacier Melt Analysis and Predictions
+</h1>
+<div style="text-align: center; font-size: 20px; color: #333; font-family: Catamaran;">
+    {current_time_ist}
 </div>
 """, unsafe_allow_html=True)
-
-
-# ------------------- SIDEBAR NAVIGATION -------------------
-page = st.sidebar.radio("Navigate", ["Overview", "Chart View", "Prediction", "Alerts", "Map Overview"])
 
 # ------------------- CHATBOT -------------------
 with st.sidebar.expander("💬 Ask GlacierBot"):
@@ -82,17 +83,17 @@ except Exception as e:
     st.exception(e)
     df = None
 
-# ------------------- GLOBAL TIME SLIDER -------------------
+# ------------------- TIME SLIDER -------------------
 if df is not None:
     year_min, year_max = int(df['year'].min()), int(df['year'].max())
     year_range = st.slider("📆 Select year range:", year_min, year_max, (year_min, year_max), step=1)
     df_filtered = df[(df['year'] >= year_range[0]) & (df['year'] <= year_range[1])]
 
-# ------------------- PAGE LOGIC -------------------
+# ------------------- PAGE CONTENT -------------------
 if df is not None:
     if page == "Overview":
         st.markdown("""
-        <div style="border: 2px solid #0b3954; padding: 20px; border-radius: 10px; background-color: rgba(255,255,255,0.95); font-family: 'Catamaran', sans-serif;">
+        <div style="border: 2px solid #0b3954; padding: 20px; border-radius: 10px; background-color: rgba(255, 255, 255, 0.95); font-family: 'Catamaran', sans-serif;">
             <h3 style="color: #0b3954;">📍 Area of Interest (AOI) Summary</h3>
             <ul style="line-height: 1.7; font-size: 16px;">
                 <li><b>Total Glacier Area:</b> ~64.13 sq.km</li>
@@ -114,6 +115,7 @@ if df is not None:
             </ul>
         </div>
         """, unsafe_allow_html=True)
+
         st.title("📋 Gangotri Glacier Melt Overview")
         st.dataframe(df_filtered, use_container_width=True)
 
@@ -129,8 +131,6 @@ if df is not None:
         df_model = df_filtered.copy()
         X = df_model['year'].values.reshape(-1, 1)
         y = df_model['area_km2'].values.reshape(-1, 1)
-
-        st.subheader("📉 Polynomial Regression (to 2050)")
         poly = PolynomialFeatures(degree=2)
         X_poly = poly.fit_transform(X)
         model = LinearRegression().fit(X_poly, y)
@@ -146,20 +146,13 @@ if df is not None:
         fig_poly = px.line(full_df, x='year', y='area_km2', color='type', markers=True, title="Polynomial Forecast")
         st.plotly_chart(fig_poly, use_container_width=True)
 
-        for year, value in zip(future_years.flatten(), pred_poly.flatten()):
-            st.metric(f"📈 Predicted Area ({year})", f"{value:.2f} sq.km")
-
         st.subheader("📊 ARIMA Time Series Forecast")
         try:
             model_arima = ARIMA(df_model['area_km2'], order=(1, 1, 1))
             model_fit = model_arima.fit()
             forecast = model_fit.forecast(steps=10)
             future_years_arima = np.arange(df_model['year'].iloc[-1] + 1, df_model['year'].iloc[-1] + 11)
-            arima_df = pd.DataFrame({
-                'year': future_years_arima,
-                'area_km2': forecast,
-                'type': 'ARIMA Forecast'
-            })
+            arima_df = pd.DataFrame({'year': future_years_arima, 'area_km2': forecast, 'type': 'ARIMA Forecast'})
 
             all_df = pd.concat([df_model[['year', 'area_km2', 'type']], arima_df])
             fig_arima = px.line(all_df, x='year', y='area_km2', color='type', title="ARIMA Forecast")
