@@ -24,7 +24,7 @@ st.markdown("""
 st.markdown(f"""
 <div style="text-align: center; font-family: 'Catamaran', sans-serif; margin-top: -10px; padding-bottom: 20px;">
     <div style="font-size: 30px; font-weight: bold; color: #0b3954;">Current Date & Time (IST)</div>
-    <div style="font-size: 24px; color: #333;">{current_time_ist}</div>
+    <div style="font-size: 24px; color: #333;"></div>
 </div>
 """, unsafe_allow_html=True)
 
