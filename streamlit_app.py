@@ -41,18 +41,14 @@ h1, h2, h3 {
 """, unsafe_allow_html=True)
 
 # ------------------- HEADER -------------------
-st.markdown("""
-<div style='text-align: center; padding-top: 10px; font-family: Catamaran, sans-serif;'>
-    <h2 style='font-size: 28px; font-weight: 700; color: #0b3954;'>🧨 Glacier Dashboard</h2>
-</div>
-""", unsafe_allow_html=True)
-
 st.markdown(f"""
-<div style='text-align: center; font-family: Catamaran; padding-top: 0px;'>
-    <h1 style='font-size: 46px; color: #0b3954;'>🏔️ Glacier Melt Analysis and Predictions</h1>
+<div style='text-align: center; font-family: Catamaran; margin-top: -20px; margin-bottom: 10px;'>
+    <h1 style='font-size: 44px; color: #0b3954;'>🧨 Glacier Dashboard</h1>
+    <h2 style='font-size: 36px; font-weight: 700; color: #0b3954;'>🏔️ Glacier Melt Analysis and Predictions</h2>
     <div style="font-size: 22px; color: #333;">{current_time_ist}</div>
 </div>
 """, unsafe_allow_html=True)
+
 
 # ------------------- SIDEBAR NAVIGATION -------------------
 page = st.sidebar.radio("Navigate", ["Overview", "Chart View", "Prediction", "Alerts", "Map Overview"])
