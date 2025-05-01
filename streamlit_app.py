@@ -9,76 +9,68 @@ from statsmodels.tsa.arima.model import ARIMA
 from datetime import datetime
 import pytz
 
-# ------------------- SETUP -------------------
+# ---------- TIME AND CONFIG ----------
 ist = pytz.timezone('Asia/Kolkata')
 current_time_ist = datetime.now(ist).strftime('%Y-%m-%d %H:%M:%S').upper()
 st.set_page_config(layout="wide")
 
-# ------------------- MODERN HERO SECTION -------------------
-st.markdown("""
-<style>
-.hero {
-    background: linear-gradient(to right, #f7f9fc, #e3f2fd);
-    padding: 2rem;
-    text-align: center;
-    border-radius: 12px;
-    margin-bottom: 1.5rem;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-}
-.hero h1 {
-    font-size: 3rem;
-    color: #0b3954;
-    font-family: 'Catamaran', sans-serif;
-    margin: 0;
-}
-.hero p {
-    font-size: 1.2rem;
-    color: #444;
-    font-family: 'Catamaran', sans-serif;
-    margin-top: 0.5rem;
-}
-</style>
-<div class="hero">
-    <h1>🏔️ Glacier Melt Analysis & Prediction App</h1>
-    <p>Tracking Gangotri Glacier Retreat Using Satellite Data & Machine Learning</p>
-</div>
-""", unsafe_allow_html=True)
-
-# ------------------- CLOCK -------------------
-st.markdown(f"""
-<div style="text-align: center; font-family: 'Catamaran', sans-serif; padding-bottom: 15px;">
-    <div style="font-size: 20px; color: #0b3954;"><b>Current IST:</b> {current_time_ist}</div>
-</div>
-""", unsafe_allow_html=True)
-
-# ------------------- GLOBAL STYLING -------------------
+# ---------- CUSTOM CSS FOR THEME ----------
 st.markdown("""
 <link href="https://fonts.googleapis.com/css2?family=Catamaran:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-[data-testid="stAppViewContainer"] {
-    background-color: #f8f9fa;
-    font-family: 'Catamaran', sans-serif;
+body {
+    font-family: 'Catamaran', sans-serif !important;
 }
-section.main {
-    background-color: rgba(255, 255, 255, 0.95);
-    padding: 1.5rem;
-    border-radius: 10px;
+[data-testid="stAppViewContainer"] {
+    background: linear-gradient(135deg, #e0f7fa 0%, #e1f5fe 100%);
 }
 h1, h2, h3 {
-    color: #0b3954 !important;
-    font-weight: 700;
+    color: #0b3954;
+    font-family: 'Catamaran', sans-serif;
+}
+.hero {
+    text-align: center;
+    padding: 2rem 1rem 1.2rem 1rem;
+    background: white;
+    border-radius: 15px;
+    margin-bottom: 25px;
+    box-shadow: 0px 4px 12px rgba(0,0,0,0.08);
+}
+.hero h1 {
+    font-size: 2.7rem;
+    margin: 0;
+}
+.hero p {
+    font-size: 1.1rem;
+    color: #333;
+    margin-top: 0.5rem;
+}
+.card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.07);
+    margin-top: 1rem;
 }
 [data-testid="stSidebar"] {
-    background-color: rgba(255, 255, 255, 0.9);
+    background-color: #ffffff;
 }
 </style>
 """, unsafe_allow_html=True)
 
-# ------------------- SIDEBAR NAV -------------------
-st.sidebar.title("📊 Glacier Dashboard")
+# ---------- HERO SECTION ----------
+st.markdown(f"""
+<div class="hero">
+    <h1>🏔️ Glacier Melt Analysis and Predictions</h1>
+    <p>{current_time_ist}</p>
+</div>
+""", unsafe_allow_html=True)
+
+# ---------- SIDEBAR NAVIGATION ----------
+st.sidebar.title("🧨 Glacier Dashboard")
 page = st.sidebar.radio("Navigate", ["Overview", "Chart View", "Prediction", "Alerts", "Map Overview"])
 
-# ------------------- SIDEBAR CHATBOT -------------------
+# ---------- SIDEBAR BOT ----------
 with st.sidebar.expander("💬 Ask GlacierBot"):
     user_q = st.text_input("Your question:", placeholder="e.g. What is NDSI?")
     if user_q:
@@ -96,7 +88,7 @@ with st.sidebar.expander("💬 Ask GlacierBot"):
         else:
             st.info("🤖 Try keywords like NDSI, retreat, ARIMA, Gangotri...")
 
-# ------------------- LOAD DATA -------------------
+# ---------- LOAD DATA ----------
 csv_url = 'https://raw.githubusercontent.com/Parkavi-29/glacier/main/Gangotri_Glacier_Area_NDSI_2001_2023.csv'
 try:
     df = pd.read_csv(csv_url)
@@ -107,51 +99,44 @@ except Exception as e:
     st.exception(e)
     df = None
 
-# ------------------- GLOBAL TIME SLIDER -------------------
+# ---------- GLOBAL TIME SLIDER ----------
 if df is not None:
     year_min, year_max = int(df['year'].min()), int(df['year'].max())
     year_range = st.slider("📆 Select year range:", year_min, year_max, (year_min, year_max), step=1)
     df_filtered = df[(df['year'] >= year_range[0]) & (df['year'] <= year_range[1])]
 
-# ------------------- PAGE LOGIC -------------------
+# ---------- PAGE CONTENT ----------
 if df is not None:
-    if page == "Overview":
-        st.markdown("""
-        <div style="border: 2px solid #0b3954; padding: 20px; border-radius: 10px; background-color: #ffffff;">
-            <h3 style="color: #0b3954;">📍 Area of Interest (AOI) Summary</h3>
-            <ul style="line-height: 1.7; font-size: 16px;">
-                <li><b>Total Glacier Area:</b> ~64.13 sq.km</li>
-                <li><b>Bounding Box:</b>
-                    <ul>
-                        <li>Longitude: 79.03°E → 79.10°E (~7.7 km)</li>
-                        <li>Latitude: 30.94°N → 31.02°N (~8.9 km)</li>
-                    </ul>
-                </li>
-                <li><b>Major Places Covered:</b>
-                    <ul>
-                        <li>Gangotri Glacier</li>
-                        <li>Gaumukh Snout</li>
-                        <li>Chirbasa & Bhojbasa</li>
-                        <li>Tapovan (partial)</li>
-                        <li>Gangotri National Park</li>
-                    </ul>
-                </li>
-            </ul>
-        </div>
-        """, unsafe_allow_html=True)
 
-        st.title("📋 Gangotri Glacier Melt Overview")
+    if page == "Overview":
+        st.markdown("""<div class="card">""", unsafe_allow_html=True)
+        st.markdown("""
+        ### 📍 Area of Interest (AOI) Summary
+        - **Total Glacier Area**: ~64.13 sq.km  
+        - **Bounding Box**:
+            - Longitude: 79.03°E → 79.10°E (~7.7 km)  
+            - Latitude: 30.94°N → 31.02°N (~8.9 km)  
+        - **Major Places Covered**:
+            - Gangotri Glacier  
+            - Gaumukh Snout  
+            - Chirbasa & Bhojbasa  
+            - Tapovan (partial)  
+            - Gangotri National Park
+        """)
+        st.markdown("</div>", unsafe_allow_html=True)
+
+        st.markdown("### 📋 Gangotri Glacier Melt Overview")
         st.dataframe(df_filtered, use_container_width=True)
 
     elif page == "Chart View":
-        st.title("📈 Glacier Retreat Trends")
+        st.markdown("### 📈 Glacier Retreat Trends")
         fig = px.line(df_filtered, x='year', y='area_km2', markers=True, title="Glacier Area (2001–2023)")
         st.plotly_chart(fig, use_container_width=True)
         loss = df_filtered['area_km2'].max() - df_filtered['area_km2'].min()
         st.metric("📉 Total Glacier Loss", f"{loss:.2f} sq.km")
 
     elif page == "Prediction":
-        st.title("🔮 Glacier Area Forecast")
+        st.markdown("### 🔮 Glacier Area Forecast")
         df_model = df_filtered.copy()
         X = df_model['year'].values.reshape(-1, 1)
         y = df_model['area_km2'].values.reshape(-1, 1)
@@ -172,20 +157,13 @@ if df is not None:
         fig_poly = px.line(full_df, x='year', y='area_km2', color='type', markers=True, title="Polynomial Forecast")
         st.plotly_chart(fig_poly, use_container_width=True)
 
-        for year, value in zip(future_years.flatten(), pred_poly.flatten()):
-            st.metric(f"📈 Predicted Area ({year})", f"{value:.2f} sq.km")
-
         st.subheader("📊 ARIMA Time Series Forecast")
         try:
             model_arima = ARIMA(df_model['area_km2'], order=(1, 1, 1))
             model_fit = model_arima.fit()
             forecast = model_fit.forecast(steps=10)
             future_years_arima = np.arange(df_model['year'].iloc[-1] + 1, df_model['year'].iloc[-1] + 11)
-            arima_df = pd.DataFrame({
-                'year': future_years_arima,
-                'area_km2': forecast,
-                'type': 'ARIMA Forecast'
-            })
+            arima_df = pd.DataFrame({'year': future_years_arima, 'area_km2': forecast, 'type': 'ARIMA Forecast'})
 
             all_df = pd.concat([df_model[['year', 'area_km2', 'type']], arima_df])
             fig_arima = px.line(all_df, x='year', y='area_km2', color='type', title="ARIMA Forecast")
@@ -194,7 +172,7 @@ if df is not None:
             st.warning("⚠️ ARIMA forecast failed.")
 
     elif page == "Alerts":
-        st.title("🚨 Glacier Risk Alerts")
+        st.markdown("### 🚨 Glacier Risk Alerts")
         latest_area = df_filtered['area_km2'].iloc[-1]
         threshold = 20.0
         if latest_area < threshold:
@@ -205,6 +183,6 @@ if df is not None:
             st.success(f"🟢 Glacier stable. Current: {latest_area:.2f} sq.km")
 
     elif page == "Map Overview":
-        st.title("🗺 Gangotri Glacier Map Overview")
+        st.markdown("### 🗺 Gangotri Glacier Map Overview")
         m = leafmap.Map(center=[30.96, 79.08], zoom=11)
         m.to_streamlit(height=600)
