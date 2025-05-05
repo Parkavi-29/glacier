@@ -186,10 +186,22 @@ if df is not None:
             st.warning(f"🟡 Warning: Glacier nearing danger ({latest_area:.2f} sq.km)")
         else:
             st.success(f"🟢 Glacier stable. Current: {latest_area:.2f} sq.km")
-            st.markdown("""### 🧊 Alert Logic
-        - If glacier area falls below **20.0 sq.km**, a critical alert is shown.
-        - This threshold can be adjusted based on scientific or policy guidance.
-        - Regular monitoring helps detect early warning signs of glacier retreat.
-        """)
+ st.markdown("""
+    ### 🔍 Alert Criteria Summary:
+    - **Critical Alert (🔴):** Area < 20 sq.km
+    - **Warning Alert (🟠):** Area between 20–25 sq.km
+    - **Safe Status (🟢):** Area > 25 sq.km
+    """)
 
+       elif page == "Map Overview":
+st.title("🗺️ Map View of Gangotri Glacier")
+    st.markdown("This map highlights the region of interest including **Gangotri Glacier, Gaumukh, Bhojbasa**, and surroundings.")
 
+    m = leafmap.Map(center=[30.98, 79.06], zoom=12)
+    m.add_basemap('SATELLITE')
+    m.add_marker(location=[30.9915, 79.0818], popup='Gangotri Glacier')
+    m.add_marker(location=[30.9936, 79.0800], popup='Gaumukh Snout')
+    m.add_marker(location=[30.9740, 79.0740], popup='Bhojbasa')
+    m.add_marker(location=[30.9625, 79.0887], popup='Chirbasa')
+    m.add_marker(location=[30.9950, 79.0750], popup='Tapovan')
+    m.to_streamlit(width=1200, height=600)
