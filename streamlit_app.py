@@ -13,6 +13,7 @@ import pytz
 ist = pytz.timezone('Asia/Kolkata')
 current_time_ist = datetime.now(ist).strftime('%Y-%m-%d %H:%M:%S').upper()
 st.set_page_config(layout="wide")
+
 # ------------------- APP TITLE -------------------
 st.markdown("""
 <h1 style='text-align: center; color: #0b3954; font-family: Catamaran; font-size: 46px; margin-bottom: 0;'>
@@ -23,7 +24,6 @@ st.markdown("""
 # ------------------- CLOCK -------------------
 st.markdown(f"""
 <div style="text-align: center; font-family: 'Catamaran', sans-serif; margin-top: -10px; padding-bottom: 20px;">
-    <div style="font-size: 30px; font-weight: bold; color: #0b3954;"></div>
     <div style="font-size: 24px; color: #333;">{current_time_ist}</div>
 </div>
 """, unsafe_allow_html=True)
@@ -41,7 +41,7 @@ st.markdown("""
     font-family: 'Catamaran', sans-serif;
 }
 section.main {
-    background-color: rgba(255, 255, 255, 0.3);  /* Light background to improve readability */
+    background-color: rgba(255, 255, 255, 0.3);
     padding: 1.5rem;
     border-radius: 10px;
 }
@@ -54,7 +54,6 @@ h1, h2, h3 {
 }
 </style>
 """, unsafe_allow_html=True)
-
 
 # ------------------- SIDEBAR -------------------
 st.sidebar.title("🧨 Glacier Dashboard")
@@ -98,7 +97,6 @@ if df is not None:
 # ------------------- PAGE LOGIC -------------------
 if df is not None:
     if page == "Overview":
-        # AOI summary in overview page
         st.markdown("""
         <div style="border: 2px solid #0b3954; padding: 20px; border-radius: 10px; background-color: rgba(255, 255, 255, 0.95); font-family: 'Catamaran', sans-serif;">
             <h3 style="color: #0b3954;">📍 Area of Interest (AOI) Summary</h3>
@@ -179,29 +177,21 @@ if df is not None:
     elif page == "Alerts":
         st.title("🚨 Glacier Risk Alerts")
         latest_area = df_filtered['area_km2'].iloc[-1]
-        threshold = 20.0
-        if latest_area < threshold:
-            st.error(f"🔴 Critical: Glacier area critically low ({latest_area:.2f} sq.km)")
-        elif latest_area < threshold + 5:
-            st.warning(f"🟡 Warning: Glacier nearing danger ({latest_area:.2f} sq.km)")
+        threshold_critical = 20.0
+        threshold_warning = 25.0
+
+        st.metric("📏 Latest Glacier Area", f"{latest_area:.2f} sq.km")
+
+        if latest_area < threshold_critical:
+            st.error(f"🔴 Critical Alert: Glacier area is critically low!")
+        elif latest_area < threshold_warning:
+            st.warning(f"🟡 Warning: Glacier area approaching danger zone.")
         else:
-            st.success(f"🟢 Glacier stable. Current: {latest_area:.2f} sq.km")
- st.markdown("""
-    ### 🔍 Alert Criteria Summary:
-    - **Critical Alert (🔴):** Area < 20 sq.km
-    - **Warning Alert (🟠):** Area between 20–25 sq.km
-    - **Safe Status (🟢):** Area > 25 sq.km
-    """)
+            st.success(f"🟢 Safe: Glacier area is within safe limits.")
 
-       elif page == "Map Overview":
-st.title("🗺️ Map View of Gangotri Glacier")
-    st.markdown("This map highlights the region of interest including **Gangotri Glacier, Gaumukh, Bhojbasa**, and surroundings.")
-
-    m = leafmap.Map(center=[30.98, 79.06], zoom=12)
-    m.add_basemap('SATELLITE')
-    m.add_marker(location=[30.9915, 79.0818], popup='Gangotri Glacier')
-    m.add_marker(location=[30.9936, 79.0800], popup='Gaumukh Snout')
-    m.add_marker(location=[30.9740, 79.0740], popup='Bhojbasa')
-    m.add_marker(location=[30.9625, 79.0887], popup='Chirbasa')
-    m.add_marker(location=[30.9950, 79.0750], popup='Tapovan')
-    m.to_streamlit(width=1200, height=600)
+    elif page == "Map Overview":
+        st.title("🗺️ Glacier Location")
+        m = leafmap.Map(center=[30.97, 79.07], zoom=11)
+        m.add_basemap("SATELLITE")
+        m.add_marker(location=[30.97, 79.07], popup="Gangotri Glacier", icon="📍")
+        m.to_streamlit(width=900, height=500)
