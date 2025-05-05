@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.express as px
 import leafmap.foliumap as leafmap
 import numpy as np
-from sklearn.linear\_model import LinearRegression
+from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
 from statsmodels.tsa.arima.model import ARIMA
 from datetime import datetime
