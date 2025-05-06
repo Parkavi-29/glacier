@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-import plotly.express as px
+import plotly.express as px 
 import leafmap.foliumap as leafmap
 import numpy as np
 from sklearn.linear_model import LinearRegression
