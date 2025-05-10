@@ -33,7 +33,7 @@ st.markdown("""
 <link href="https://fonts.googleapis.com/css2?family=Catamaran:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 [data-testid="stAppViewContainer"] {
-    background-image: url("https://themepack.me/i/c/749x467/media/g/1072/solid-color-theme-qm11.jpg");
+    background-image: url("https://thumbs.dreamstime.com/b/abstract-solid-color-background-texture-abstract-solid-green-color-background-texture-photo-128773447.jpg");
     background-color: transparent;
     background-size: cover;
     background-attachment: fixed;
