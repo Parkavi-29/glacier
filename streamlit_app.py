@@ -33,7 +33,7 @@ st.markdown("""
 <link href="https://fonts.googleapis.com/css2?family=Catamaran:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 [data-testid="stAppViewContainer"] {
-    background-image: url("https://www.pixelstalk.net/wp-content/uploads/2016/06/Download-Solid-Color-Backgrounds.jpg");
+    background-image: url("https://themepack.me/i/c/749x467/media/g/1072/solid-color-theme-wg1.jpg");
     background-color: transparent;
     background-size: cover;
     background-attachment: fixed;
