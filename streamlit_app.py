@@ -33,7 +33,7 @@ st.markdown("""
 <link href="https://fonts.googleapis.com/css2?family=Catamaran:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 [data-testid="stAppViewContainer"] {
-    background-image: url("https://img.freepik.com/free-vector/abstract-background-green-tone_1393-402.jpg");
+    background-image: url("https://img.freepik.com/free-vector/gradient-background-green-tones_23-2148373477.jpg");
     background-color: transparent;
     background-size: cover;
     background-attachment: fixed;
