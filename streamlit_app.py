@@ -33,7 +33,7 @@ st.markdown("""
 <link href="https://fonts.googleapis.com/css2?family=Catamaran:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 [data-testid="stAppViewContainer"] {
-    background-image: url("https://media.istockphoto.com/id/1447252624/vector/vector-seamless-geometric-pattern.jpg?s=612x612&w=0&k=20&c=2PaSnkcQcuh5TAXXxb6GfHs2zU2Ah42eUYQg0TNjZII=");
+    background-image: url("https://media.istockphoto.com/id/1385204442/vector/seamless-green-field-planting-agriculture-lines-background.jpg?s=612x612&w=0&k=20&c=V47oDekKnYxX17bfX7ZS3SRZrbUUeCYqzy0n2zNYNgQ=");
     background-color: transparent;
     background-size: cover;
     background-attachment: fixed;
