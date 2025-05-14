@@ -133,21 +133,26 @@ elif page == "Prediction":
 
     # --- ARIMA ---
     with tabs[1]:
-        try:
+    try:
+        steps = forecast_year - df_model['year'].max()
+        if steps > 0 and len(df_model['area_km2']) >= 10:
             arima_model = ARIMA(df_model['area_km2'], order=(1, 1, 1))
             arima_fit = arima_model.fit()
-            steps = forecast_year - df_model['year'].max()
             arima_forecast = arima_fit.forecast(steps=steps)
             arima_years = np.arange(df_model['year'].max() + 1, forecast_year + 1)
             arima_df = pd.DataFrame({'year': arima_years, 'area_km2': arima_forecast, 'type': 'ARIMA Forecast'})
             full_df = pd.concat([df_model[['year', 'area_km2', 'type']], arima_df])
             fig2 = px.line(full_df, x='year', y='area_km2', color='type', title="ARIMA Forecast")
             st.plotly_chart(fig2, use_container_width=True)
+
             csv2 = arima_df.to_csv(index=False).encode('utf-8')
             st.download_button("⬇ Download ARIMA Forecast CSV", data=csv2, file_name="arima_forecast.csv")
-        except Exception as e:
-            st.warning("ARIMA forecast failed.")
+        else:
+            st.warning("Insufficient data or invalid forecast year.")
+    except Exception as e:
+        st.warning("⚠️ ARIMA forecast failed.")
 
+    
 elif page == "Alerts":
     st.subheader("🚨 Glacier Risk Alerts")
     latest_area = df_filtered['area_km2'].iloc[-1]
