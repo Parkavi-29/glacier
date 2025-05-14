@@ -15,7 +15,7 @@ current_time_ist = datetime.now(ist).strftime('%Y-%m-%d %H:%M:%S').upper()
 st.set_page_config(layout="wide")
 # ------------------- APP TITLE -------------------
 st.markdown("""
-<h1 style='text-align: center; color: #0b3954; font-family: Catamaran; font-size: 46px; margin-bottom: 0;'> 
+<h1 style='text-align: center; color: #0b3954; font-family: Catamaran; font-size: 46px; margin-bottom: 0;'>
     🏔️ Glacier Melt Analysis and Predictions 
 </h1>
 """, unsafe_allow_html=True)
@@ -33,7 +33,7 @@ st.markdown("""
 <link href="https://fonts.googleapis.com/css2?family=Catamaran:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 [data-testid="stAppViewContainer"] {
-    background-image: url("https://img.freepik.com/free-vector/gradient-background-green-tones_23-2148373477.jpg");
+    background-image: url("https://i.pinimg.com/736x/bf/05/8f/bf058f329a00bd070962533e91f34d30.jpg");
     background-color: transparent;
     background-size: cover;
     background-attachment: fixed;
