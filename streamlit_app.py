@@ -132,6 +132,7 @@ elif page == "Prediction":
         st.download_button("⬇ Download Forecast CSV", data=csv, file_name="poly_forecast.csv")
 
     # --- ARIMA ---
+    # --- ARIMA ---
     with tabs[1]:
     try:
         steps = forecast_year - df_model['year'].max()
@@ -140,7 +141,11 @@ elif page == "Prediction":
             arima_fit = arima_model.fit()
             arima_forecast = arima_fit.forecast(steps=steps)
             arima_years = np.arange(df_model['year'].max() + 1, forecast_year + 1)
-            arima_df = pd.DataFrame({'year': arima_years, 'area_km2': arima_forecast, 'type': 'ARIMA Forecast'})
+            arima_df = pd.DataFrame({
+                'year': arima_years,
+                'area_km2': arima_forecast,
+                'type': 'ARIMA Forecast'
+            })
             full_df = pd.concat([df_model[['year', 'area_km2', 'type']], arima_df])
             fig2 = px.line(full_df, x='year', y='area_km2', color='type', title="ARIMA Forecast")
             st.plotly_chart(fig2, use_container_width=True)
@@ -149,8 +154,10 @@ elif page == "Prediction":
             st.download_button("⬇ Download ARIMA Forecast CSV", data=csv2, file_name="arima_forecast.csv")
         else:
             st.warning("Insufficient data or invalid forecast year.")
-    except Exception as e:
+     except Exception as e:
         st.warning("⚠️ ARIMA forecast failed.")
+
+
 
     
 elif page == "Alerts":
