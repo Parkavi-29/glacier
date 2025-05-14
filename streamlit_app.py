@@ -13,18 +13,53 @@ import pytz
 ist = pytz.timezone('Asia/Kolkata')
 current_time_ist = datetime.now(ist).strftime('%Y-%m-%d %H:%M:%S').upper()
 st.set_page_config(layout="wide")
-# ------------------- APP TITLE -------------------
+
+# ------------------- CUSTOM NAVBAR -------------------
 st.markdown("""
-<h1 style='text-align: center; color: #0b3954; font-family: Catamaran; font-size: 46px; margin-bottom: 0;'>
-    🏔️ Glacier Melt Analysis and Predictions 
-</h1>
+<style>
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    background-color: #ffffffcc;
+    padding: 10px 20px;
+    border-bottom: 1px solid #ccc;
+    font-family: 'Catamaran', sans-serif;
+}
+.navbar a {
+    margin-right: 20px;
+    font-size: 18px;
+    color: #0b3954;
+    text-decoration: none;
+    font-weight: 600;
+}
+.navbar a:hover {
+    color: #0077b6;
+}
+</style>
+<div class="navbar">
+    <a href="#overview">Overview</a>
+    <a href="#charts">Trends</a>
+    <a href="#prediction">Forecast</a>
+    <a href="#alerts">Alerts</a>
+    <a href="#map">Map</a>
+</div>
 """, unsafe_allow_html=True)
 
 # ------------------- CLOCK -------------------
 st.markdown(f"""
-<div style="text-align: center; font-family: 'Catamaran', sans-serif; margin-top: -10px; padding-bottom: 20px;">
-    <div style="font-size: 30px; font-weight: bold; color: #0b3954;"></div>
+<div style="text-align: center; font-family: 'Catamaran', sans-serif; margin-top: 10px; padding-bottom: 10px;">
     <div style="font-size: 24px; color: #333;">{current_time_ist}</div>
+</div>
+""", unsafe_allow_html=True)
+
+# ------------------- WELCOME -------------------
+st.markdown("""
+<div style="text-align: center; margin-top: 20px; margin-bottom: 30px;">
+    <h2 style="color: #0b3954;">Welcome to the Gangotri Glacier Melt Dashboard</h2>
+    <p style="font-size: 18px; max-width: 800px; margin: auto;">
+        Explore glacier area trends, make predictions, view interactive maps, and stay alert to climate changes — powered by satellite data and AI.
+    </p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -41,7 +76,7 @@ st.markdown("""
     font-family: 'Catamaran', sans-serif;
 }
 section.main {
-    background-color: rgba(255, 255, 255, 0.3);  /* Light background to improve readability */
+    background-color: rgba(255, 255, 255, 0.3);
     padding: 1.5rem;
     border-radius: 10px;
 }
@@ -55,12 +90,17 @@ h1, h2, h3 {
 </style>
 """, unsafe_allow_html=True)
 
-
 # ------------------- SIDEBAR -------------------
-st.sidebar.title("🧨 Glacier Dashboard")
-page = st.sidebar.radio("Navigate", ["Overview", "Chart View", "Prediction", "Alerts", "Map Overview"])
+with st.sidebar:
+    show_sidebar = st.toggle("🔽 Show Sidebar", value=True)
 
-# ------------------- BUILT-IN CHATBOT -------------------
+if show_sidebar:
+    st.sidebar.title("🧨 Glacier Dashboard")
+    page = st.sidebar.radio("Navigate", ["Overview", "Chart View", "Prediction", "Alerts", "Map Overview"])
+else:
+    page = "Overview"
+
+# ------------------- CHATBOT -------------------
 with st.sidebar.expander("💬 Ask GlacierBot"):
     user_q = st.text_input("Your question:", placeholder="e.g. What is NDSI?")
     if user_q:
@@ -98,9 +138,9 @@ if df is not None:
 # ------------------- PAGE LOGIC -------------------
 if df is not None:
     if page == "Overview":
-        # AOI summary in overview page
+        st.markdown("<h2 id='overview'>📋 Gangotri Glacier Melt Overview</h2>", unsafe_allow_html=True)
         st.markdown("""
-        <div style="border: 2px solid #0b3954; padding: 20px; border-radius: 10px; background-color: rgba(255, 255, 255, 0.95); font-family: 'Catamaran', sans-serif;">
+        <div style="border: 2px solid #0b3954; padding: 20px; border-radius: 10px; background-color: rgba(255, 255, 255, 0.95);">
             <h3 style="color: #0b3954;">📍 Area of Interest (AOI) Summary</h3>
             <ul style="line-height: 1.7; font-size: 16px;">
                 <li><b>Total Glacier Area:</b> ~64.13 sq.km</li>
@@ -122,19 +162,17 @@ if df is not None:
             </ul>
         </div>
         """, unsafe_allow_html=True)
-
-        st.title("📋 Gangotri Glacier Melt Overview")
         st.dataframe(df_filtered, use_container_width=True)
 
     elif page == "Chart View":
-        st.title("📈 Glacier Retreat Trends")
+        st.markdown("<h2 id='charts'>📈 Glacier Retreat Trends</h2>", unsafe_allow_html=True)
         fig = px.line(df_filtered, x='year', y='area_km2', markers=True, title="Glacier Area (2001–2023)")
         st.plotly_chart(fig, use_container_width=True)
         loss = df_filtered['area_km2'].max() - df_filtered['area_km2'].min()
         st.metric("📉 Total Glacier Loss", f"{loss:.2f} sq.km")
 
     elif page == "Prediction":
-        st.title("🔮 Glacier Area Forecast")
+        st.markdown("<h2 id='prediction'>🔮 Glacier Area Forecast</h2>", unsafe_allow_html=True)
         df_model = df_filtered.copy()
         X = df_model['year'].values.reshape(-1, 1)
         y = df_model['area_km2'].values.reshape(-1, 1)
@@ -177,7 +215,7 @@ if df is not None:
             st.warning("⚠️ ARIMA forecast failed.")
 
     elif page == "Alerts":
-        st.title("🚨 Glacier Risk Alerts")
+        st.markdown("<h2 id='alerts'>🚨 Glacier Risk Alerts</h2>", unsafe_allow_html=True)
         latest_area = df_filtered['area_km2'].iloc[-1]
         threshold = 20.0
         if latest_area < threshold:
@@ -188,6 +226,14 @@ if df is not None:
             st.success(f"🟢 Glacier stable. Current: {latest_area:.2f} sq.km")
 
     elif page == "Map Overview":
-        st.title("🗺 Gangotri Glacier Map Overview")
+        st.markdown("<h2 id='map'>🗺 Gangotri Glacier Map Overview</h2>", unsafe_allow_html=True)
         m = leafmap.Map(center=[30.96, 79.08], zoom=11)
         m.to_streamlit(height=600)
+
+# ------------------- FOOTER -------------------
+st.markdown("""
+<hr>
+<div style='text-align: center; padding: 10px; font-size: 14px; color: #555;'>
+    Built with ❤️ using Streamlit | © 2025 Glacier AI Team
+</div>
+""", unsafe_allow_html=True)
