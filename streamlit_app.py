@@ -15,7 +15,7 @@ current_time_ist = datetime.now(ist).strftime('%Y-%m-%d %H:%M:%S').upper()
 st.set_page_config(layout="wide")
 # ------------------- APP TITLE -------------------
 st.markdown("""
-<h1 style='text-align: center; color: #0b3954; font-family: Catamaran; font-size: 46px; margin-bottom: 0;'>
+<h1 style='text-align: center; color: #0b3954; font-family: Catamaran; font-size: 46px; margin-bottom: 0;'> 
     🏔️ Glacier Melt Analysis and Predictions 
 </h1>
 """, unsafe_allow_html=True)
